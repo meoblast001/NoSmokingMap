@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Non-Smoking</h1>
+    <p>Count: @ViewBag.Overpass.Length</p>
+    <p>
+        <ul>
+        @foreach (var name in ViewBag.Overpass)
+        {
+            <li>@name</li>
+        }
+        </ul>
+    </p>
+</div>
