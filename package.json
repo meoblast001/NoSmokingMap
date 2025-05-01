@@ -1,0 +1,17 @@
+{
+  "name": "NoSmokingMap",
+  "scripts": {
+    "build": "webpack build --mode=production",
+    "build-dev": "webpack build --mode=development"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  }
+}
