@@ -1,5 +1,7 @@
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NoSmokingMap.Models.Overpass;
 
 namespace NoSmokingMap.Models;
@@ -52,6 +54,13 @@ public class OverpassModel : IDisposable
     {
         using var requestContent = new StringContent("data=" + urlEncoder.Encode(overpassQuery), Encoding.UTF8);
         var response = await httpClient.PostAsync("/api/interpreter", requestContent);
-        return await response.Content.ReadFromJsonAsync<OverpassResponse>();
+        var json = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions()
+        {
+          PropertyNameCaseInsensitive = true,
+          Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }
+        };
+        return JsonSerializer.Deserialize<OverpassResponse>(json, options);
     }
 }

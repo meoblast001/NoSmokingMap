@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
 
@@ -18,10 +19,11 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var content = await overpassModel.FetchResultsAsync();
-        ViewBag.Overpass = content.Elements
-            .Where(element => element.Tags.ContainsKey("name"))
-            .Select(element => element.Tags["name"])
+        var overpassData = content.Elements.Select(LocationViewModel.TryCreate)
+            .Where(element => element != null)
             .ToArray();
+        ViewBag.Overpass = overpassData;
+        ViewBag.OverpassJson = JsonSerializer.Serialize(overpassData);
         return View();
     }
 

@@ -8,17 +8,22 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-console.debug(require('leaflet/dist/images/marker-icon.png'));
-
 const map = L.map('map');
 const defaultCenter = [52.520008, 13.404954];
 const defaultZoom = 11;
 const basemap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
 });
-const marker = L.marker(defaultCenter);
 
-map.setView(defaultCenter,  defaultZoom);
+map.setView(defaultCenter, defaultZoom);
 
 basemap.addTo(map);
-marker.addTo(map);
+
+let mapDataElement = document.getElementById("mapdata");
+let mapData = JSON.parse(mapDataElement.innerText);
+for (let mapElement of mapData)
+{
+  const marker = L.marker([mapElement.Lat, mapElement.Lon]);
+  const popupContent = mapElement.Name;
+  marker.addTo(map).bindPopup(popupContent);
+}

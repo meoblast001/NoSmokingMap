@@ -2,14 +2,18 @@
     ViewData["Title"] = "Home Page";
 }
 
+<script id="mapdata" type="application/json">
+@Html.Raw(ViewBag.OverpassJson)
+</script>
+
 <div class="text-center">
     <h1 class="display-4">Non-Smoking</h1>
     <p>Count: @ViewBag.Overpass.Length</p>
     <p>
         <ul>
-        @foreach (var name in ViewBag.Overpass)
+        @foreach (LocationViewModel viewModel in ViewBag.Overpass)
         {
-            <li>@name</li>
+            <li>@viewModel.Name</li>
         }
         </ul>
     </p>
