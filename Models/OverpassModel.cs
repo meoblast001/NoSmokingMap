@@ -50,7 +50,7 @@ public class OverpassModel : IDisposable
         httpClient.Dispose();
     }
 
-    public async Task<OverpassResponse> FetchResultsAsync()
+    public async Task<OverpassResponse?> FetchResultsAsync()
     {
         using var requestContent = new StringContent("data=" + urlEncoder.Encode(overpassQuery), Encoding.UTF8);
         var response = await httpClient.PostAsync("/api/interpreter", requestContent);

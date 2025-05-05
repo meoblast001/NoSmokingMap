@@ -4,7 +4,7 @@ namespace NoSmokingMap.Models;
 
 public class LocationViewModel
 {
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
     public float Lat { get; private set; }
 
