@@ -1,5 +1,5 @@
 {
-  "name": "NoSmokingMap",
+  "name": "no-smoking-map",
   "scripts": {
     "build": "webpack build --mode=production",
     "build-dev": "webpack build --mode=development"
