@@ -25,4 +25,16 @@ public class OverpassController : Controller
             .ToArray();
         return Json(overpassData);
     }
+
+    public IActionResult SearchLocationsTerms(string searchTerms)
+    {
+        Console.WriteLine($"Searching locations by terms: {searchTerms}");
+        return Json(null);
+    }
+
+    public IActionResult SearchLocationsGeoposition(double lat, double lon)
+    {
+        Console.WriteLine($"Searching locations by geoposition: {lat}, {lon}");
+        return Json(null);
+    }
 }

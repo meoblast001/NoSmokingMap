@@ -15,6 +15,21 @@ export default class ApiService {
       console.error(`Error during fetch: ${error.message}`);
     }
   }
+
+  async searchLocationsByTerms(searchTerms: string) : Promise<null> {
+    const params = new URLSearchParams();
+    params.append('searchTerms', searchTerms);
+    const response = await fetch(`/api/overpass/searchlocationsterms?${params}`);
+    return null;
+  }
+
+  async searchLocationsByGeoposition(lat: number, lon: number) : Promise<null> {
+    const params = new URLSearchParams();
+    params.append('lat', lat.toString());
+    params.append('lon', lon.toString());
+    const response = await fetch(`/api/overpass/searchlocationsgeoposition?${params}`);
+    return null;
+  }
 }
 
 const apiService = new ApiService();
