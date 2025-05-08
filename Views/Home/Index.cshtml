@@ -1,21 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<script id="mapdata" type="application/json">
+﻿<script id="mapdata" type="application/json">
 @Html.Raw(ViewBag.OverpassJson)
 </script>
 
-<div class="text-center">
-    <h1 class="display-4">Non-Smoking</h1>
-    <p>Count: @ViewBag.Overpass.Length</p>
-    <p>
-        <ul>
-        @foreach (LocationViewModel viewModel in ViewBag.Overpass)
-        {
-            <li>@viewModel.Name</li>
-        }
-        </ul>
-    </p>
-    <div id="map" style="width: 100%; height: 800px;"></div>
+<noscript>You need to enable JavaScript to see this page.</noscript>
+<div id="root" style="width: 100%; height: 100%;">
 </div>

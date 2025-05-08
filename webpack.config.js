@@ -2,7 +2,7 @@ var path = require('path');
 
 module.exports = {
   entry: {
-    main: './Client/main.ts'
+    main: './Client/index.tsx'
   },
   output: {
     publicPath: "/dist/",
@@ -11,6 +11,16 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.?(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        }
+      },
       {
         test: /\.css$/,
         use: [
@@ -28,10 +38,15 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx']
   }
 };
