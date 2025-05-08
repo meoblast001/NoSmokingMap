@@ -23,7 +23,7 @@ export default class MapPage extends React.Component<{}, State> {
   render(): React.ReactNode {
     if (this.state.locations) {
       return (
-        <div style={{width: 1200, height: 700}}>
+        <div style={{ width: '100%', height: '100%' }}>
           <MapContainer center={[52.520008, 13.404954]} zoom={11}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></TileLayer>
             {this.getMarkers()}
