@@ -2,6 +2,7 @@ import * as React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
+import { Alert, Container, LinearProgress } from '@mui/material';
 
 interface State {
   locations: LocationModel[] | null;
@@ -31,9 +32,17 @@ export default class MapPage extends React.Component<{}, State> {
         </div>
       );
     } else if (this.state.error) {
-      return (<div>Error.</div>);
+      return (
+        <Container sx={{ p: 2 }}>
+          <Alert severity='error'>Failed to get locations.</Alert>
+        </Container>
+      );
     } else {
-      return (<div>Loading...</div>);
+      return (
+        <Container sx={{ p: 2 }}>
+          <LinearProgress />
+        </Container>
+      );
     }
   }
 

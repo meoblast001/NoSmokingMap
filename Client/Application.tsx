@@ -1,32 +1,43 @@
 import * as React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router';
 import { BottomNavigation, BottomNavigationAction, Box, Divider } from '@mui/material';
 import MapIcon from '@mui/icons-material/Map';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 
 import MapPage from './Pages/MapPage';
+import SearchEditPage from './Pages/SearchEditPage';
+import { useLocation } from 'react-router';
+import { AboutPage } from './Pages/AboutPage';
 
-export default class App extends React.Component {
-  render(): React.ReactNode {
-    return (
-      <BrowserRouter>
-        <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ flex: 1 }}>
-            <Routes>
-              <Route index element={<MapPage />} />
-            </Routes>
-          </Box>
+function AppRoot(): React.ReactNode {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return (
+    <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1 }}>
+        <Routes>
+          <Route index element={<MapPage />} />
+          <Route path="/search" element={<SearchEditPage />} />
+          <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </Box>
 
-          <Divider />
+      <Divider />
 
-          <BottomNavigation showLabels>
-            <BottomNavigationAction label="Map" icon={<MapIcon />} />
-            <BottomNavigationAction label="Modify" icon={<EditIcon />} />
-            <BottomNavigationAction label="About" icon={<InfoIcon />} />
-          </BottomNavigation>
-        </Box>
-      </BrowserRouter>
-    );
-  }
+      <BottomNavigation showLabels value={location.pathname} onChange={(_event, value) => navigate(value)}>
+        <BottomNavigationAction label="Map" icon={<MapIcon />} value="/" />
+        <BottomNavigationAction label="Modify" icon={<EditIcon />} value="/search" />
+        <BottomNavigationAction label="About" icon={<InfoIcon />} value="/about" />
+      </BottomNavigation>
+    </Box>
+  );
+}
+
+export default function App(): React.ReactNode {
+  return (
+    <BrowserRouter>
+      <AppRoot />
+    </BrowserRouter>
+  );
 }
