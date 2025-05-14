@@ -50,7 +50,10 @@ export default class MapPage extends React.Component<{}, State> {
     return this.state.locations.map(location => {
       return (
         <Marker position={[location.lat, location.lon]}>
-          <Popup>{location.name}</Popup>
+          <Popup>
+            <b>{location.name}</b><br />
+            Smoking: {location.smoking}
+          </Popup>
         </Marker>
       )
     });

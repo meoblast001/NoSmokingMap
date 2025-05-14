@@ -10,6 +10,8 @@ public class LocationViewModel
 
     public float Lon { get; private set; }
 
+    public string? Smoking { get; private set; }
+
     public static LocationViewModel? TryCreate(OverpassElement element)
     {
         if (element.Tags.Name == null)
@@ -23,7 +25,8 @@ public class LocationViewModel
         {
             Name = element.Tags.Name,
             Lat = location.Value.lat,
-            Lon = location.Value.lon
+            Lon = location.Value.lon,
+            Smoking = element.Tags.Smoking?.ToString()
         };
     }
 }
