@@ -9,6 +9,7 @@ import MapPage from './Pages/MapPage';
 import SearchEditPage from './Pages/SearchEditPage';
 import { useLocation } from 'react-router';
 import { AboutPage } from './Pages/AboutPage';
+import EditNodePage from './Pages/EditNodePage';
 
 function AppRoot(): React.ReactNode {
   const location = useLocation();
@@ -20,7 +21,8 @@ function AppRoot(): React.ReactNode {
         <Box sx={{ flex: 1, overflow: 'scroll' }}>
           <Routes>
             <Route index element={<MapPage />} />
-            <Route path="/search" element={<SearchEditPage />} />
+            <Route path="/edit" element={<SearchEditPage />} />
+            <Route path="/edit/:nodeId" element={<EditNodePage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>
         </Box>
@@ -29,7 +31,7 @@ function AppRoot(): React.ReactNode {
 
         <BottomNavigation showLabels value={location.pathname} onChange={(_event, value) => navigate(value)}>
           <BottomNavigationAction label="Map" icon={<MapIcon />} value="/" />
-          <BottomNavigationAction label="Modify" icon={<EditIcon />} value="/search" />
+          <BottomNavigationAction label="Modify" icon={<EditIcon />} value="/edit" />
           <BottomNavigationAction label="About" icon={<InfoIcon />} value="/about" />
         </BottomNavigation>
       </Box>

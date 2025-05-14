@@ -4,6 +4,8 @@ namespace NoSmokingMap.Models;
 
 public class LocationViewModel
 {
+    public long Id { get; private set; }
+
     public string Name { get; private set; } = string.Empty;
 
     public float Lat { get; private set; }
@@ -15,7 +17,7 @@ public class LocationViewModel
     public static LocationViewModel? TryCreate(OverpassElement element)
     {
         if (element.Tags.Name == null)
-            return null;    
+            return null;
 
         var location = element.GetLocation();
         if (!location.HasValue)
@@ -23,6 +25,7 @@ public class LocationViewModel
 
         return new LocationViewModel()
         {
+            Id = element.Id,
             Name = element.Tags.Name,
             Lat = location.Value.lat,
             Lon = location.Value.lon,

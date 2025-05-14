@@ -5,6 +5,9 @@ namespace NoSmokingMap.Models.Overpass;
 public class OverpassElement
 {
     [JsonRequired]
+    public required long Id { get; set; }
+
+    [JsonRequired]
     public required string Type { get; set; }
 
     public class OverpassTags

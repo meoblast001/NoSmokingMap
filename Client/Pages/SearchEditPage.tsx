@@ -5,6 +5,11 @@ import { getCurrentPosition } from '../Geolocation';
 import { apiService } from "../ApiService";
 import LocationModel from "../Models/LocationModel";
 import AmenityCard from "../Components/AmenityCard";
+import { NavigateFunction, useNavigate } from "react-router";
+
+interface Props {
+  navigate: NavigateFunction;
+}
 
 interface State {
   searching: boolean;
@@ -12,8 +17,8 @@ interface State {
   results: LocationModel[] | null;
 }
 
-export default class SearchEditPage extends React.Component<{}, State> {
-  constructor(params: {}) {
+export class SearchEditPageInternal extends React.Component<Props, State> {
+  constructor(params: Props) {
     super(params);
     this.state = { searching: false, geolocationFailure: false, results: [] };
   }
@@ -54,7 +59,8 @@ export default class SearchEditPage extends React.Component<{}, State> {
   private renderResults(): React.ReactNode {
     if (this.state.results != null)
     {
-      const resultCards = this.state.results.map(result => <AmenityCard location={result} />);
+      const resultCards = this.state.results
+        .map(result => <AmenityCard location={result} onClick={id => this.onAmenityClicked(id)} />);
       return (
         <List>
           {resultCards}
@@ -69,6 +75,10 @@ export default class SearchEditPage extends React.Component<{}, State> {
         </Container>
       );
     }
+  }
+
+  private onAmenityClicked(id: number) {
+    this.props.navigate(`/edit/${id}`);
   }
 
   private async onSearch(searchTerm: string) {
@@ -92,4 +102,9 @@ export default class SearchEditPage extends React.Component<{}, State> {
       this.setState({ searching: false, geolocationFailure: true });
     }
   }
+}
+
+export default function SearchEditPage() {
+  const navigate = useNavigate();
+  return <SearchEditPageInternal navigate={navigate} />;
 }

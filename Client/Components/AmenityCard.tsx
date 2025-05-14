@@ -3,19 +3,20 @@ import LocationModel from '../Models/LocationModel';
 import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 
-interface Params {
+interface Props {
   location: LocationModel
+  onClick: (id: number) => void
 }
 
-export default class AmenityCard extends React.Component<Params> {
-  constructor(params: Params) {
-    super(params);
+export default class AmenityCard extends React.Component<Props> {
+  constructor(props: Props) {
+    super(props);
   }
 
   render(): React.ReactNode {
     return (
       <Card variant="outlined" sx={{ m: 1 }}>
-        <CardActionArea onClick={() => this.onClicked()}>
+        <CardActionArea onClick={() => this.onClick()}>
           <CardContent>
             <Box sx={{ display: 'flex', flexDirection: 'row' }}>
               <Box sx={{ flex: 1 }}>
@@ -34,7 +35,7 @@ export default class AmenityCard extends React.Component<Params> {
     );
   }
 
-  private onClicked() {
-
+  private onClick() {
+    this.props.onClick(this.props.location.id);
   }
 }
