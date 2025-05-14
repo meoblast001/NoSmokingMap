@@ -8,9 +8,9 @@ public class LocationViewModel
 
     public string Name { get; private set; } = string.Empty;
 
-    public float Lat { get; private set; }
+    public double Lat { get; private set; }
 
-    public float Lon { get; private set; }
+    public double Lon { get; private set; }
 
     public string? Smoking { get; private set; }
 
@@ -27,8 +27,8 @@ public class LocationViewModel
         {
             Id = element.Id,
             Name = element.Tags.Name,
-            Lat = location.Value.lat,
-            Lon = location.Value.lon,
+            Lat = location.Value.Latitude,
+            Lon = location.Value.Longitude,
             Smoking = element.Tags.Smoking?.ToString()
         };
     }

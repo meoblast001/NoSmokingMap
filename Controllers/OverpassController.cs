@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
+using NoSmokingMap.Settings;
 
 namespace NoSmokingMap.Controllers;
 
 public class OverpassController : Controller
 {
     private readonly OverpassModel overpassModel;
+    private readonly OverpassSettings overpassSettings;
 
-    public OverpassController(OverpassModel overpassModel)
+    public OverpassController(OverpassModel overpassModel, OverpassSettings overpassSettings)
     {
         this.overpassModel = overpassModel;
+        this.overpassSettings = overpassSettings;
     }
 
     public async Task<IActionResult> Locations()
@@ -38,9 +41,17 @@ public class OverpassController : Controller
         return Json(overpassData);
     }
 
-    public IActionResult SearchLocationsGeoposition(double lat, double lon)
+    public async Task<IActionResult> SearchLocationsGeoposition(double lat, double lon)
     {
-        Console.WriteLine($"Searching locations by geoposition: {lat}, {lon}");
-        return Json(null);
+        await overpassModel.Update();
+
+        var geocoordinates = new Geocoordinates(lat, lon);
+        var content = overpassModel.GetAmenitiesWithinDistance(geocoordinates,
+            overpassSettings.GeolocationMaxDistanceMeters);
+
+        var overpassData = content.Select(LocationViewModel.TryCreate)
+            .Where(element => element != null)
+            .ToArray();
+        return Json(overpassData);
     }
 }

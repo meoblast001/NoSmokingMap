@@ -35,12 +35,23 @@ export default class ApiService {
     }
   }
 
-  async searchLocationsByGeoposition(lat: number, lon: number) : Promise<null> {
-    const params = new URLSearchParams();
-    params.append('lat', lat.toString());
-    params.append('lon', lon.toString());
-    const response = await fetch(`/api/overpass/searchlocationsgeoposition?${params}`);
-    return null;
+  async searchLocationsByGeoposition(lat: number, lon: number) : Promise<LocationModel[] | null> {
+    try {
+      const params = new URLSearchParams();
+      params.append('lat', lat.toString());
+      params.append('lon', lon.toString());
+      const response = await fetch(`/api/overpass/searchlocationsgeoposition?${params}`);
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return null;
+      }
+
+      const json: LocationModel[] | null = await response.json();
+      return json;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return null;
+    }
   }
 }
 

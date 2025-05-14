@@ -40,17 +40,17 @@ public class OverpassElement
 
     public OverpassBounds? Bounds { get; set; }
 
-    public (float lat, float lon)? GetLocation()
+    public Geocoordinates? GetLocation()
     {
         if (Lat.HasValue && Lon.HasValue)
         {
-            return (Lat.Value, Lon.Value);
+            return new Geocoordinates(Lat.Value, Lon.Value);
         }
         else if (Bounds != null)
         {
             var lat = Bounds.Minlat + (Bounds.Maxlat - Bounds.Minlat) / 2f;
             var lon = Bounds.Minlon + (Bounds.Maxlon - Bounds.Minlon) / 2f;
-            return (lat, lon);
+            return new Geocoordinates(lat, lon);
         }
         else
             return null;

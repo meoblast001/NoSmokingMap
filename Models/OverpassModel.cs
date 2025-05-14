@@ -45,6 +45,17 @@ public class OverpassModel
         return matchingAmenities;
     }
 
+    public IEnumerable<OverpassElement> GetAmenitiesWithinDistance(Geocoordinates userPosition, double limitMeters)
+    {
+        return allAmenities
+            .Where(amenity =>
+            {
+                var amenityLocation = amenity.GetLocation();
+                var distance = amenityLocation?.MeterDistance(userPosition);
+                return distance.HasValue && distance < limitMeters;
+            });
+    }
+
     private void GroupAllAmenitiesBySmoking()
     {
         amenitiesBySmoking = allAmenities.Where(amenity => amenity.Tags.Smoking.HasValue)

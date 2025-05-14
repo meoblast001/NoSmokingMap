@@ -95,8 +95,9 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
         enableHighAccuracy: false,
         maximumAge: 300000 /* 5m */
       });
-      await apiService.searchLocationsByGeoposition(position.coords.latitude, position.coords.longitude);
-      this.setState({ searching: false, geolocationFailure: false })
+      const results = await apiService.searchLocationsByGeoposition(position.coords.latitude,
+        position.coords.longitude);
+      this.setState({ searching: false, geolocationFailure: false, results });
     } catch (error) {
       console.debug("Failure to search by geolocation", error);
       this.setState({ searching: false, geolocationFailure: true });
