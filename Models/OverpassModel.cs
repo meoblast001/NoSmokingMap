@@ -36,6 +36,15 @@ public class OverpassModel
             : Enumerable.Empty<OverpassElement>();
     }
 
+    public IEnumerable<OverpassElement> GetAmenitiesByKeywords(string searchText)
+    {
+        var keywords = searchText.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var matchingAmenities = allAmenities
+            .Where(amenity => amenity.Tags.Name != null && keywords.All(
+                keyword => amenity.Tags.Name.Contains(keyword, StringComparison.InvariantCultureIgnoreCase)));
+        return matchingAmenities;
+    }
+
     private void GroupAllAmenitiesBySmoking()
     {
         amenitiesBySmoking = allAmenities.Where(amenity => amenity.Tags.Smoking.HasValue)

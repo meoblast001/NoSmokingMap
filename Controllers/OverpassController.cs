@@ -19,10 +19,6 @@ public class OverpassController : Controller
         var content = overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.No)
             .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Isolated))
             .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Outside));
-        if (content == null)
-        {
-            return Json(null);
-        }
 
         var overpassData = content.Select(LocationViewModel.TryCreate)
             .Where(element => element != null)
@@ -30,10 +26,16 @@ public class OverpassController : Controller
         return Json(overpassData);
     }
 
-    public IActionResult SearchLocationsTerms(string searchTerms)
+    public async Task<IActionResult> SearchLocationsTerms(string searchTerms)
     {
-        Console.WriteLine($"Searching locations by terms: {searchTerms}");
-        return Json(null);
+        await overpassModel.Update();
+
+        var content = overpassModel.GetAmenitiesByKeywords(searchTerms);
+
+        var overpassData = content.Select(LocationViewModel.TryCreate)
+            .Where(element => element != null)
+            .ToArray();
+        return Json(overpassData);
     }
 
     public IActionResult SearchLocationsGeoposition(double lat, double lon)

@@ -20,6 +20,8 @@ export default class ApiService {
     const params = new URLSearchParams();
     params.append('searchTerms', searchTerms);
     const response = await fetch(`/api/overpass/searchlocationsterms?${params}`);
+    if (response.ok)
+      console.debug(await response.json());
     return null;
   }
 
