@@ -16,8 +16,8 @@ function AppRoot(): React.ReactNode {
   const theme = createTheme({ typography: { fontFamily: `'Roboto', 'Helvetica', 'Arial', sans-serif` } });
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ flex: 1 }}>
+      <Box sx={{ width: '100dvw', height: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: 1, overflow: 'scroll' }}>
           <Routes>
             <Route index element={<MapPage />} />
             <Route path="/search" element={<SearchEditPage />} />
