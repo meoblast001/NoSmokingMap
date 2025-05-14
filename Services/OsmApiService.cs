@@ -8,11 +8,11 @@ public class OsmApiService
 {
     private readonly HttpClient osmHttpClient;
 
-    public OsmApiService(OsmApiSettings osmApiSettings)
+    public OsmApiService(OsmSettings osmSettings)
     {
         osmHttpClient = new HttpClient()
         {
-            BaseAddress = new Uri(osmApiSettings.BaseUri)
+            BaseAddress = new Uri(osmSettings.BaseUri)
         };
     }
 

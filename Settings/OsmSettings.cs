@@ -1,6 +1,6 @@
 namespace NoSmokingMap.Settings;
 
-public class OsmApiSettings
+public class OsmSettings
 {
     public required string BaseUri { get; set; }
 }

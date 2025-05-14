@@ -1,66 +1,47 @@
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using NoSmokingMap.Models.Overpass;
+using NoSmokingMap.Services;
 
 namespace NoSmokingMap.Models;
 
-public class OverpassModel : IDisposable
+public class OverpassModel
 {
-    private readonly HttpClient httpClient;
-    private readonly UrlEncoder urlEncoder;
+    private readonly OverpassApiService overpassApiService;
 
-    private string overpassQuery = @"<osm-script output=""json"" output-config="""" timeout=""25"">
-  <query into=""searchArea"" type=""area"">
-    <id-query type=""area"" ref=""3600062422"" into=""searchArea""/>
-  </query>
-  <union into=""_"">
-    <query into=""_"" type=""nwr"">
-      <has-kv k=""smoking"" modv="""" v=""no""/>
-      <has-kv k=""amenity"" modv="""" v=""bar""/>
-      <area-query from=""searchArea""/>
-    </query>
-    <query into=""_"" type=""nwr"">
-      <has-kv k=""smoking"" modv="""" v=""isolated""/>
-      <has-kv k=""amenity"" modv="""" v=""bar""/>
-      <area-query from=""searchArea""/>
-    </query>
-    <query into=""_"" type=""nwr"">
-      <has-kv k=""smoking"" modv="""" v=""outside""/>
-      <has-kv k=""amenity"" modv="""" v=""bar""/>
-      <area-query from=""searchArea""/>
-    </query>
-  </union>
-  <print e="""" from=""_"" geometry=""full"" ids=""yes"" limit="""" mode=""body"" n="""" order=""id"" s="""" w=""""/>
-</osm-script>
-";
+    private OverpassElement[] allAmenities;
+    private Dictionary<OverpassSmoking, OverpassElement[]> amenitiesBySmoking;
+    private DateTime? lastQueryTime = null;
 
-    public OverpassModel()
+    public OverpassModel(OverpassApiService overpassApiService)
     {
-        httpClient = new HttpClient()
-        {
-            BaseAddress = new Uri("https://overpass-api.de/")
-        };
-        urlEncoder = UrlEncoder.Default;
+        this.overpassApiService = overpassApiService;
+
+        allAmenities = [];
+        amenitiesBySmoking = new Dictionary<OverpassSmoking, OverpassElement[]>();
     }
 
-    public void Dispose()
+    public async Task Update()
     {
-        httpClient.Dispose();
+        if (lastQueryTime == null || DateTime.UtcNow > lastQueryTime.Value.AddDays(1))
+        {
+            allAmenities = await overpassApiService.FetchAmenities("bar");
+            GroupAllAmenitiesBySmoking();
+            lastQueryTime = DateTime.UtcNow;
+        }
     }
 
-    public async Task<OverpassResponse?> FetchResultsAsync()
+    public IEnumerable<OverpassElement> GetAmenitiesBySmoking(OverpassSmoking smokingType)
     {
-        using var requestContent = new StringContent("data=" + urlEncoder.Encode(overpassQuery), Encoding.UTF8);
-        var response = await httpClient.PostAsync("/api/interpreter", requestContent);
-        var json = await response.Content.ReadAsStringAsync();
+        return amenitiesBySmoking.TryGetValue(smokingType, out var amenities)
+            ? amenities
+            : Enumerable.Empty<OverpassElement>();
+    }
 
-        var options = new JsonSerializerOptions()
-        {
-          PropertyNameCaseInsensitive = true,
-          Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }
-        };
-        return JsonSerializer.Deserialize<OverpassResponse>(json, options);
+    private void GroupAllAmenitiesBySmoking()
+    {
+        amenitiesBySmoking = allAmenities.Where(amenity => amenity.Tags.Smoking.HasValue)
+            .GroupBy(amenity => amenity.Tags.Smoking ?? default)
+            .ToDictionary(
+                group => group.Key,
+                group => group.ToArray());
     }
 }

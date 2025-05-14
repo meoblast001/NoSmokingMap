@@ -10,11 +10,14 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.Configure<OAuthSettings>(builder.Configuration.GetSection("OAuthSettings"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OAuthSettings>>().Value);
-builder.Services.Configure<OsmApiSettings>(builder.Configuration.GetSection("OsmApiSettings"));
-builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OsmApiSettings>>().Value);
+builder.Services.Configure<OsmSettings>(builder.Configuration.GetSection("OsmSettings"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OsmSettings>>().Value);
+builder.Services.Configure<OverpassSettings>(builder.Configuration.GetSection("OverpassSettings"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OverpassSettings>>().Value);
 
 builder.Services.AddSingleton<OsmAuthService>();
 builder.Services.AddSingleton<OsmApiService>();
+builder.Services.AddSingleton<OverpassApiService>();
 
 builder.Services.AddSingleton<OverpassModel>();
 

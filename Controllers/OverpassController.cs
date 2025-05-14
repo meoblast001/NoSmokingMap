@@ -14,13 +14,17 @@ public class OverpassController : Controller
 
     public async Task<IActionResult> Locations()
     {
-        var content = await overpassModel.FetchResultsAsync();
+        await overpassModel.Update();
+
+        var content = overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.No)
+            .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Isolated))
+            .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Outside));
         if (content == null)
         {
             return Json(null);
         }
 
-        var overpassData = content.Elements.Select(LocationViewModel.TryCreate)
+        var overpassData = content.Select(LocationViewModel.TryCreate)
             .Where(element => element != null)
             .ToArray();
         return Json(overpassData);
