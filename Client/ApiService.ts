@@ -13,16 +13,26 @@ export default class ApiService {
       return json;
     } catch (error) {
       console.error(`Error during fetch: ${error.message}`);
+      return null;
     }
   }
 
-  async searchLocationsByTerms(searchTerms: string) : Promise<null> {
-    const params = new URLSearchParams();
-    params.append('searchTerms', searchTerms);
-    const response = await fetch(`/api/overpass/searchlocationsterms?${params}`);
-    if (response.ok)
-      console.debug(await response.json());
-    return null;
+  async searchLocationsByTerms(searchTerms: string) : Promise<LocationModel[] | null> {
+    try {
+      const params = new URLSearchParams();
+      params.append('searchTerms', searchTerms);
+      const response = await fetch(`/api/overpass/searchlocationsterms?${params}`);
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return null;
+      }
+
+      const json: LocationModel[] | null = await response.json();
+      return json;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return null;
+    }
   }
 
   async searchLocationsByGeoposition(lat: number, lon: number) : Promise<null> {

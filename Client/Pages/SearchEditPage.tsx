@@ -1,18 +1,21 @@
-import { Container, LinearProgress, Box, Alert } from "@mui/material";
+import { Container, LinearProgress, Box, Alert, List, Divider } from "@mui/material";
 import * as React from "react";
 import SearchForm from '../Components/SearchForm';
 import { getCurrentPosition } from '../Geolocation';
 import { apiService } from "../ApiService";
+import LocationModel from "../Models/LocationModel";
+import AmenityCard from "../Components/AmenityCard";
 
 interface State {
   searching: boolean;
   geolocationFailure: boolean;
+  results: LocationModel[] | null;
 }
 
 export default class SearchEditPage extends React.Component<{}, State> {
   constructor(params: {}) {
     super(params);
-    this.state = { searching: false, geolocationFailure: false };
+    this.state = { searching: false, geolocationFailure: false, results: [] };
   }
 
   render(): React.ReactNode {
@@ -21,8 +24,10 @@ export default class SearchEditPage extends React.Component<{}, State> {
         <SearchForm blockingInput={this.state.searching}
             onSearch={x => this.onSearch(x)}
             onShowNearbyLocations={() => this.onShowNearbyLocations()}/>
+        <Divider sx={{ p: 1 }} />
         {this.renderSearching()}
         {this.renderGeolocationFailure()}
+        {this.renderResults()}
       </Container>
     );
   }
@@ -40,16 +45,36 @@ export default class SearchEditPage extends React.Component<{}, State> {
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>Failed to get locations.</Alert>
         </Container>
-      )
+      );
     }
     else
       return null;
   }
 
+  private renderResults(): React.ReactNode {
+    if (this.state.results != null)
+    {
+      const resultCards = this.state.results.map(result => <AmenityCard location={result} />);
+      return (
+        <List>
+          {resultCards}
+        </List>
+      );
+    }
+    else
+    {
+      return (
+        <Container sx={{ p: 2 }}>
+          <Alert severity='error'>Failed to search.</Alert>
+        </Container>
+      );
+    }
+  }
+
   private async onSearch(searchTerm: string) {
     this.setState({ searching: true, geolocationFailure: false });
-    await apiService.searchLocationsByTerms(searchTerm);
-    this.setState({ searching: false, geolocationFailure: false });
+    const results = await apiService.searchLocationsByTerms(searchTerm);
+    this.setState({ searching: false, geolocationFailure: false, results });
   }
 
   private async onShowNearbyLocations() {
