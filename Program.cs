@@ -41,7 +41,4 @@ app.MapStaticAssets();
 app.MapControllerRoute(name: "api", pattern: "api/{controller}/{action}/{id?}");
 app.MapControllerRoute(name: "spa-fallback", pattern: "{*url}", defaults: new { controller = "Spa", action = "Index" });
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 app.Run();
