@@ -8,7 +8,7 @@ public class OverpassElement
     public required long Id { get; set; }
 
     [JsonRequired]
-    public required string Type { get; set; }
+    public required OverpassElementType Type { get; set; }
 
     public class OverpassTags
     {
