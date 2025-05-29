@@ -22,7 +22,7 @@ function AppRoot(): React.ReactNode {
           <Routes>
             <Route index element={<MapPage />} />
             <Route path="/edit" element={<SearchEditPage />} />
-            <Route path="/edit/:nodeId" element={<EditNodePage />} />
+            <Route path="/edit/:elementType/:elementId" element={<EditNodePage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>
         </Box>

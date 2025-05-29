@@ -5,7 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 interface Props {
   location: LocationModel
-  onClick: (id: number) => void
+  onClick: () => void
 }
 
 export default class AmenityCard extends React.Component<Props> {
@@ -36,6 +36,6 @@ export default class AmenityCard extends React.Component<Props> {
   }
 
   private onClick() {
-    this.props.onClick(this.props.location.id);
+    this.props.onClick();
   }
 }

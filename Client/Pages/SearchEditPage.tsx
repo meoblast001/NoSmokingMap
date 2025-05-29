@@ -60,7 +60,7 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
     if (this.state.results != null)
     {
       const resultCards = this.state.results
-        .map(result => <AmenityCard location={result} onClick={id => this.onAmenityClicked(id)} />);
+        .map(result => <AmenityCard location={result} onClick={() => this.onAmenityClicked(result)} />);
       return (
         <List>
           {resultCards}
@@ -77,8 +77,8 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
     }
   }
 
-  private onAmenityClicked(id: number) {
-    this.props.navigate(`/edit/${id}`);
+  private onAmenityClicked(locationModel: LocationModel) {
+    this.props.navigate(`/edit/${locationModel.type}/${locationModel.id}`);
   }
 
   private async onSearch(searchTerm: string) {
