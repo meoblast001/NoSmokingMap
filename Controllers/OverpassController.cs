@@ -1,9 +1,13 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
 using NoSmokingMap.Settings;
 
 namespace NoSmokingMap.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
+[Produces(MediaTypeNames.Application.Json)]
 public class OverpassController : Controller
 {
     private readonly OverpassModel overpassModel;
@@ -15,6 +19,7 @@ public class OverpassController : Controller
         this.overpassSettings = overpassSettings;
     }
 
+    [Route("locations")]
     public async Task<IActionResult> Locations()
     {
         await overpassModel.Update();
@@ -29,6 +34,7 @@ public class OverpassController : Controller
         return Json(overpassData);
     }
 
+    [Route("locations_by_terms")]
     public async Task<IActionResult> SearchLocationsTerms(string searchTerms)
     {
         await overpassModel.Update();
@@ -41,6 +47,7 @@ public class OverpassController : Controller
         return Json(overpassData);
     }
 
+    [Route("locations_by_geoposition")]
     public async Task<IActionResult> SearchLocationsGeoposition(double lat, double lon)
     {
         await overpassModel.Update();

@@ -21,7 +21,7 @@ export default class ApiService {
     try {
       const params = new URLSearchParams();
       params.append('searchTerms', searchTerms);
-      const response = await fetch(`/api/overpass/searchlocationsterms?${params}`);
+      const response = await fetch(`/api/overpass/locations_by_terms?${params}`);
       if (!response.ok) {
         console.error(`Response status: ${response.status}`);
         return null;
@@ -40,7 +40,7 @@ export default class ApiService {
       const params = new URLSearchParams();
       params.append('lat', lat.toString());
       params.append('lon', lon.toString());
-      const response = await fetch(`/api/overpass/searchlocationsgeoposition?${params}`);
+      const response = await fetch(`/api/overpass/locations_by_geoposition?${params}`);
       if (!response.ok) {
         console.error(`Response status: ${response.status}`);
         return null;

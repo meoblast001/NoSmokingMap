@@ -3,6 +3,7 @@ using NoSmokingMap.Services;
 
 namespace NoSmokingMap.Controllers;
 
+[Route("osm_auth")]
 public class OsmAuthController : Controller
 {
     private readonly OsmAuthService osmAuthService;
@@ -12,11 +13,13 @@ public class OsmAuthController : Controller
         this.osmAuthService = osmAuthService;
     }
 
+    [Route("login")]
     public IActionResult Login()
     {
         return Redirect(osmAuthService.GetRedirectLoginUrl().AbsoluteUri);
     }
 
+    [Route("post_auth")]
     public async Task<IActionResult> PostAuth(string code)
     {
         var accessToken = await osmAuthService.RequestAccessToken(code);

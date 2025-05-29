@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
 using NoSmokingMap.Models.Overpass;
@@ -5,6 +6,9 @@ using NoSmokingMap.Services;
 
 namespace NoSmokingMap.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
+[Produces(MediaTypeNames.Application.Json)]
 public class OsmController : Controller
 {
     private readonly OsmApiService osmApiService;
@@ -14,6 +18,7 @@ public class OsmController : Controller
         this.osmApiService = osmApiService;
     }
 
+    [Route("user_details")]
     public async Task<IActionResult> UserDetails()
     {
         OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);
@@ -26,6 +31,7 @@ public class OsmController : Controller
         return Content(userDetails?.DisplayName ?? "None");
     }
 
+    [Route("update_smoking")]
     public async Task<IActionResult> UpdateSmoking(string elementId, OverpassElementType elementType,
         OverpassSmoking smokingStatus)
     {
