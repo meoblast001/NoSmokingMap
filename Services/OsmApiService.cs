@@ -1,12 +1,13 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Xml;
 using System.Xml.Serialization;
 using NoSmokingMap.Models;
+using NoSmokingMap.Services.OpenStreetMap;
 using NoSmokingMap.Settings;
 using OsmSharp;
 using OsmSharp.API;
 using OsmSharp.Changesets;
-using OsmSharp.Tags;
 
 namespace NoSmokingMap.Services;
 
@@ -38,86 +39,128 @@ public class OsmApiService
         return osm?.User;
     }
 
-    public async Task<OsmGeo?> GetElementByIdAsync(OsmAccessToken accessToken, OsmGeoType geoType, long elementId)
+    public async Task<OsmGeo> GetElementByIdAsync(OsmGeoType geoType, long elementId)
     {
         var geoTypeUrlString = GeoTypeToUrlString(geoType);
-        if (geoTypeUrlString == null)
-            return null;
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/0.6/{geoTypeUrlString}/{elementId}");
         var response = await osmHttpClient.SendAsync(request);
-        var osm = xmlSerializer.Deserialize(await response.Content.ReadAsStreamAsync()) as Osm;
-        if (osm == null)
-            return null;
 
-        return FirstElementOfGeoTypeOrDefault(geoType, osm);
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                var osm = xmlSerializer.Deserialize(await response.Content.ReadAsStreamAsync()) as Osm;
+                if (osm == null)
+                    throw new OsmApiException("[Read Element] OSM response could not be parsed");
+
+                var result = FirstElementOfGeoTypeOrDefault(geoType, osm);
+                if (result == null)
+                    throw new OsmApiException("[Read Element] No element returned");
+
+                return result;
+            case HttpStatusCode.NotFound:
+                throw new OsmApiException($"[Read Element] Element not found, ID {elementId}");
+            case HttpStatusCode.Gone:
+                throw new OsmApiException("[Read Element] Element deleted");
+            default:
+                throw new OsmApiException($"[Read Element] Unknown OSM error [Status: {response.StatusCode}]");
+        }
+            
     }
 
-    public async Task<long> CreateChangeset(OsmAccessToken accessToken)
+    public async Task<long> CreateChangeset(OsmAccessToken accessToken, Changeset changeset)
     {
-        var osmModel = new Osm()
-        {
-            Changesets = new Changeset[]
-            {
-                new Changeset()
-                {
-                    Tags = new TagsCollection()
-                    {
-                        new Tag() { Key = "created_by", Value = "NoSmokingMap" },
-                        new Tag() { Key = "comment", Value = "Updating smoking status" }
-                    }
-                }
-            }
-        };
-
-        var osmDocument = new StringWriter();
-        var xmlWriterSettings = new XmlWriterSettings() { OmitXmlDeclaration = true };
-        var xmlWriter = XmlWriter.Create(osmDocument, xmlWriterSettings);
-        xmlSerializer.Serialize(xmlWriter, osmModel);
+        var osmRequestModel = new Osm() { Changesets = [changeset] };
+        var osmRequestXml = SerializeOsmToXml(osmRequestModel);
 
         var request = new HttpRequestMessage(HttpMethod.Put, "/api/0.6/changeset/create")
         {
-            Content = new StringContent(osmDocument.ToString())
+            Content = new StringContent(osmRequestXml)
         };
         ConfigureAuthorization(request, accessToken);
         var response = await osmHttpClient.SendAsync(request);
-        return long.Parse(await response.Content.ReadAsStringAsync());
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                var changsetIdString = await response.Content.ReadAsStringAsync();
+                if (!long.TryParse(changsetIdString, out long changesetId))
+                    throw new OsmApiException(
+                        $"[Create Changeset] Could not parse changeset ID \"{changsetIdString}\"");
+
+                return changesetId;
+            case HttpStatusCode.BadRequest:
+                throw new OsmApiException("[Create Changeset] OSM endpoint could not parse XML request");
+            default:
+                throw new OsmApiException($"[Create Changeset] Unknown OSM error [Status: {response.StatusCode}]");
+        }
     }
 
-    public async Task<bool> CloseChangeset(OsmAccessToken accessToken, long changesetId)
+    public async Task CloseChangeset(OsmAccessToken accessToken, long changesetId)
     {
         var request = new HttpRequestMessage(HttpMethod.Put, $"/api/0.6/changeset/{changesetId}/close");
         ConfigureAuthorization(request, accessToken);
         var response = await osmHttpClient.SendAsync(request);
-        return response.StatusCode == System.Net.HttpStatusCode.OK;
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                return;
+            case HttpStatusCode.NotFound:
+                throw new OsmApiException($"[Close Changeset] Changeset not found, ID \"{changesetId}\"");
+            case HttpStatusCode.Conflict:
+                throw new OsmApiException($"[Close Changeset] Changeset already closed, ID \"{changesetId}\"");
+            default:
+                throw new OsmApiException($"[Close Changeset] Unknown OSM error [Status: {response.StatusCode}]");
+        }
     }
 
-    public async Task<bool> UpdateElementByIdAsync(OsmAccessToken accessToken, OsmGeoType geoType, long elementId,
-        OsmGeo element)
+    public async Task UpdateElementByIdAsync(OsmAccessToken accessToken, OsmGeo element)
     {
-        var geoTypeUrlString = GeoTypeToUrlString(geoType);
-        if (geoTypeUrlString == null)
-            return false;
+        var geoTypeUrlString = GeoTypeToUrlString(element.Type);
 
-        var osmModel = new Osm()
+        var osmRequestModel = new Osm()
         {
-            Nodes = geoType == OsmGeoType.Node ? new Node[] { element as Node } : new Node[0],
-            Ways = geoType == OsmGeoType.Way ? new Way[] { element as Way } : new Way[0],
-            Relations = geoType == OsmGeoType.Relation ? new Relation[] { element as Relation } : new Relation[0]
+            Nodes = element is Node node ? [node] : Array.Empty<Node>(),
+            Ways = element is Way way ? [way] : Array.Empty<Way>(),
+            Relations = element is Relation relation ? [relation] : Array.Empty<Relation>()
         };
+        var osmRequestXml = SerializeOsmToXml(osmRequestModel);
 
+        var request = new HttpRequestMessage(HttpMethod.Put, $"/api/0.6/{geoTypeUrlString}/{element.Id}")
+        {
+            Content = new StringContent(osmRequestXml)
+        };
+        ConfigureAuthorization(request, accessToken);
+        var response = await osmHttpClient.SendAsync(request);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                return;
+            case HttpStatusCode.BadRequest:
+                throw new OsmApiException("[Update Element] OSM endpoint could not parse XML request");
+            case HttpStatusCode.Conflict:
+                throw new OsmApiException($"[Update Element] Element conflicted or changeset already closed, "
+                    + $"Element ID \"{element.Id}\", Changeset ID \"{element.ChangeSetId}\"");
+            case HttpStatusCode.NotFound:
+                throw new OsmApiException($"[Update Element] Element not found, ID {element.Id}");
+            case HttpStatusCode.PreconditionFailed:
+                throw new OsmApiException("[Update Element] Element dependencies invalid");
+            case HttpStatusCode.TooManyRequests:
+                throw new OsmApiException("[Update Element] Rate limiting");
+            default:
+                throw new OsmApiException($"[Update Element] Unknown OSM error [Status: {response.StatusCode}]");
+        }
+    }
+
+    private string SerializeOsmToXml(Osm osmModel)
+    {
         var osmDocument = new StringWriter();
         var xmlWriterSettings = new XmlWriterSettings() { OmitXmlDeclaration = true };
         var xmlWriter = XmlWriter.Create(osmDocument, xmlWriterSettings);
         xmlSerializer.Serialize(xmlWriter, osmModel);
-
-        var request = new HttpRequestMessage(HttpMethod.Put, $"/api/0.6/{geoTypeUrlString}/{elementId}")
-        {
-            Content = new StringContent(osmDocument.ToString())
-        };
-        ConfigureAuthorization(request, accessToken);
-        var response = await osmHttpClient.SendAsync(request);
-        return response.StatusCode == System.Net.HttpStatusCode.OK;
+        return osmDocument.ToString();
     }
 
     private string GeoTypeToUrlString(OsmGeoType geoType)
