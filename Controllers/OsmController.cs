@@ -50,12 +50,6 @@ public class OsmController : Controller
     [Route("element")]
     public async Task<IActionResult> ReadElement(string elementId, OverpassElementType elementType)
     {
-        OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);
-        if (accessToken == null)
-        {
-            return Unauthorized(OsmError.ErrorUnauthorized);
-        }
-
         if (!long.TryParse(elementId, out long elementIdNum))
         {
             return BadRequest(OsmError.ErrorParameterFormat(nameof(elementId)));
@@ -74,9 +68,17 @@ public class OsmController : Controller
         }
     }
 
+    public class UpdateSmokingRequestParams
+    {
+        public required string ElementId { get; set; }
+        public required OverpassElementType ElementType { get; set; }
+        public required OverpassSmoking SmokingStatus { get; set; }
+        public required string Comment { get; set; }
+    }
+
     [Route("update_smoking")]
-    public async Task<IActionResult> UpdateSmoking(string elementId, OverpassElementType elementType,
-        OverpassSmoking smokingStatus, string comment)
+    [HttpPost]
+    public async Task<IActionResult> UpdateSmoking([FromBody] UpdateSmokingRequestParams model)
     {
         OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);
         if (accessToken == null)
@@ -84,20 +86,20 @@ public class OsmController : Controller
             return Unauthorized(OsmError.ErrorUnauthorized);
         }
 
-        if (!long.TryParse(elementId, out long elementIdNum))
+        if (!long.TryParse(model.ElementId, out long elementIdNum))
         {
-            return BadRequest(OsmError.ErrorParameterFormat(nameof(elementId)));
+            return BadRequest(OsmError.ErrorParameterFormat(nameof(model.ElementId)));
         }
 
         try
         {
-            var osmElement = await osmApiService.ReadElementByIdAsync(elementType.ToOsmGeoType(), elementIdNum);
+            var osmElement = await osmApiService.ReadElementByIdAsync(model.ElementType.ToOsmGeoType(), elementIdNum);
 
-            var changeset = OsmChangesetFactory.Create($"Updating smoking status. User comment: {comment}");
+            var changeset = OsmChangesetFactory.Create($"Updating smoking status. User comment: {model.Comment}");
             long changesetId = await osmApiService.CreateChangeset(accessToken, changeset);
 
             osmElement.ChangeSetId = changesetId;
-            osmElement.Tags["smoking"] = smokingStatus.ToOsmTagString();
+            osmElement.Tags["smoking"] = model.SmokingStatus.ToOsmTagString();
 
             await osmApiService.UpdateElementByIdAsync(accessToken, osmElement);
 

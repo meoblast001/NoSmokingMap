@@ -1,5 +1,6 @@
 import { ElementType } from './Models/ElementType';
 import LocationModel from './Models/LocationModel';
+import { SmokingStatus } from './Models/SmokingStatus';
 
 export default class ApiService {
   async fetchLocations(): Promise<LocationModel[] | null> {
@@ -55,11 +56,11 @@ export default class ApiService {
     }
   }
 
-  async fetchLocationDetails(elementType: ElementType,elementId: string): Promise<LocationModel | null> {
+  async fetchLocationDetails(elementId: string, elementType: ElementType): Promise<LocationModel | null> {
     try {
       const params = new URLSearchParams();
-      params.append('elementType', elementType);
       params.append('elementId', elementId);
+      params.append('elementType', elementType);
       const response = await fetch(`/api/osm/element?${params}`);
       if (!response.ok) {
         console.error(`Response status: ${response.status}`);
@@ -68,6 +69,28 @@ export default class ApiService {
 
       const json: LocationModel | null = await response.json();
       return json;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return null;
+    }
+  }
+
+  async updateSmoking(elementId: string, elementType: ElementType, smokingStatus: SmokingStatus,
+    comment: string): Promise<boolean>
+  {
+    try {
+      const formData = { elementId, elementType, smokingStatus, comment };
+      const response = await fetch(`/api/osm/update_smoking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return null;
+      }
+
+      return true;
     } catch (error) {
       console.error(`Error during fetch: ${error.message}`);
       return null;

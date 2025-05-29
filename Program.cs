@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using NoSmokingMap.Models;
 using NoSmokingMap.Services;
@@ -6,7 +8,11 @@ using NoSmokingMap.Settings;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    });
 
 builder.Services.Configure<OAuthSettings>(builder.Configuration.GetSection("OAuthSettings"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OAuthSettings>>().Value);
