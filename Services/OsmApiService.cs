@@ -39,7 +39,7 @@ public class OsmApiService
         return osm?.User;
     }
 
-    public async Task<OsmGeo> GetElementByIdAsync(OsmGeoType geoType, long elementId)
+    public async Task<OsmGeo> ReadElementByIdAsync(OsmGeoType geoType, long elementId)
     {
         var geoTypeUrlString = GeoTypeToUrlString(geoType);
 

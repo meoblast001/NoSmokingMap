@@ -47,6 +47,33 @@ public class OsmController : Controller
         return Content(userDetails?.DisplayName ?? "None");
     }
 
+    [Route("element")]
+    public async Task<IActionResult> ReadElement(string elementId, OverpassElementType elementType)
+    {
+        OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);
+        if (accessToken == null)
+        {
+            return Unauthorized(OsmError.ErrorUnauthorized);
+        }
+
+        if (!long.TryParse(elementId, out long elementIdNum))
+        {
+            return BadRequest(OsmError.ErrorParameterFormat(nameof(elementId)));
+        }
+
+        try
+        {
+            var osmElement = await osmApiService.ReadElementByIdAsync(elementType.ToOsmGeoType(), elementIdNum);
+            var locationViewModel = LocationViewModel.TryCreate(osmElement);
+            return Json(locationViewModel);
+        }
+        catch (OsmApiException ex)
+        {
+            logger.LogError(ex, "OSM API error");
+            return StatusCode(500, OsmError.ErrorOsmApi(ex.Message));
+        }
+    }
+
     [Route("update_smoking")]
     public async Task<IActionResult> UpdateSmoking(string elementId, OverpassElementType elementType,
         OverpassSmoking smokingStatus, string comment)
@@ -64,7 +91,7 @@ public class OsmController : Controller
 
         try
         {
-            var osmElement = await osmApiService.GetElementByIdAsync(elementType.ToOsmGeoType(), elementIdNum);
+            var osmElement = await osmApiService.ReadElementByIdAsync(elementType.ToOsmGeoType(), elementIdNum);
 
             var changeset = OsmChangesetFactory.Create($"Updating smoking status. User comment: {comment}");
             long changesetId = await osmApiService.CreateChangeset(accessToken, changeset);
@@ -75,13 +102,13 @@ public class OsmController : Controller
             await osmApiService.UpdateElementByIdAsync(accessToken, osmElement);
 
             await osmApiService.CloseChangeset(accessToken, changesetId);
+
+            return Ok();
         }
         catch (OsmApiException ex)
         {
             logger.LogError(ex, "OSM API error");
             return StatusCode(500, OsmError.ErrorOsmApi(ex.Message));
         }
-
-        return Ok();
     }
 }
