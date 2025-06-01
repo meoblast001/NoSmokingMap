@@ -14,6 +14,16 @@ public class OverpassApiService : IDisposable
     private readonly HttpClient httpClient;
     private readonly UrlEncoder urlEncoder;
 
+    public class PoiKeySearch
+    {
+        public class PoiKeySubSearch
+        {
+            public required IReadOnlyDictionary<string, string> IntersectionSearch { get; set; }
+        }
+
+        public required IEnumerable<PoiKeySubSearch> UnionSearch { get; set; }
+    }
+
     public OverpassApiService(OverpassSettings overpassSettings)
     {
         this.overpassSettings = overpassSettings;
@@ -29,12 +39,13 @@ public class OverpassApiService : IDisposable
         httpClient.Dispose();
     }
 
-    public async Task<OverpassElement[]> FetchAmenities(string amenityType)
+    public async Task<OverpassElement[]> FetchPointsOfInterest(PoiKeySearch keySearch)
     {
-        var overpassQuery = new OverpassQueryBuilder(200)
-            .SetSearchAreaReference(overpassSettings.SearchAreaReference)
-            .SearchAmenityType(amenityType)
-            .Build();
+        var overpassQueryBuilder = new OverpassQueryBuilder(200)
+            .SetSearchAreaReference(overpassSettings.SearchAreaReference);
+        foreach (var subSearch in keySearch.UnionSearch)
+            overpassQueryBuilder.AppendSearchByTags(subSearch.IntersectionSearch);
+        var overpassQuery = overpassQueryBuilder.Build();
 
         using var requestContent = new StringContent("data=" + urlEncoder.Encode(overpassQuery), Encoding.UTF8);
         var response = await httpClient.PostAsync("/api/interpreter", requestContent);
@@ -42,8 +53,8 @@ public class OverpassApiService : IDisposable
 
         var options = new JsonSerializerOptions()
         {
-          PropertyNameCaseInsensitive = true,
-          Converters = { new SafeEnumConverterFactory() }
+            PropertyNameCaseInsensitive = true,
+            Converters = { new SafeEnumConverterFactory() }
         };
         var jsonResponse = JsonSerializer.Deserialize<OverpassResponse>(json, options);
 

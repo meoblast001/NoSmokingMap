@@ -10,8 +10,8 @@ public class OverpassQueryBuilder
 
     private readonly XmlDocument xmlDocument;
     private readonly XmlElement rootElement;
+    private readonly XmlElement unionQueryElement;
     private XmlElement? areaQueryElement;
-    private XmlElement? amenityQueryElement;
     bool built = false;
 
     public OverpassQueryBuilder(int timeout)
@@ -23,6 +23,10 @@ public class OverpassQueryBuilder
         rootElement.SetAttribute("output-config", string.Empty);
         rootElement.SetAttribute("timeout", timeout.ToString(CultureInfo.InvariantCulture));
         xmlDocument.AppendChild(rootElement);
+
+        unionQueryElement = xmlDocument.CreateElement("union");
+        unionQueryElement.SetAttribute("into", ResultSetKey);
+        rootElement.AppendChild(unionQueryElement);
     }
 
     public OverpassQueryBuilder SetSearchAreaReference(string areaReference)
@@ -44,24 +48,24 @@ public class OverpassQueryBuilder
         return this;
     }
 
-    public OverpassQueryBuilder SearchAmenityType(string amenityType)
+    public OverpassQueryBuilder AppendSearchByTags(IEnumerable<KeyValuePair<string, string>> intersectionKvTags)
     {
-        if (amenityQueryElement != null)
-            throw new InvalidOperationException("Amenity search already set");
+        var queryElement = xmlDocument.CreateElement("query");
+        queryElement.SetAttribute("into", ResultSetKey);
+        queryElement.SetAttribute("type", "nwr");
+        unionQueryElement.AppendChild(queryElement);
 
-        amenityQueryElement = xmlDocument.CreateElement("query");
-        amenityQueryElement.SetAttribute("into", ResultSetKey);
-        amenityQueryElement.SetAttribute("type", "nwr");
-        rootElement.AppendChild(amenityQueryElement);
-
-        var hasKvAmenityElement = xmlDocument.CreateElement("has-kv");
-        hasKvAmenityElement.SetAttribute("k", "amenity");
-        hasKvAmenityElement.SetAttribute("v", amenityType);
-        amenityQueryElement.AppendChild(hasKvAmenityElement);
+        foreach (var kv in intersectionKvTags)
+        {
+            var hasKvElement = xmlDocument.CreateElement("has-kv");
+            hasKvElement.SetAttribute("k", kv.Key);
+            hasKvElement.SetAttribute("v", kv.Value);
+            queryElement.AppendChild(hasKvElement);
+        }
 
         var areaQueryElement = xmlDocument.CreateElement("area-query");
         areaQueryElement.SetAttribute("from", SearchAreaKey);
-        amenityQueryElement.AppendChild(areaQueryElement);
+        queryElement.AppendChild(areaQueryElement);
 
         return this;
     }

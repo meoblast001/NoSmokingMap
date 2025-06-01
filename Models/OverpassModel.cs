@@ -6,6 +6,7 @@ namespace NoSmokingMap.Models;
 public class OverpassModel
 {
     private readonly OverpassApiService overpassApiService;
+    private readonly OverpassApiService.PoiKeySearch poiKeySearch;
 
     private OverpassElement[] allAmenities;
     private Dictionary<OverpassSmoking, OverpassElement[]> amenitiesBySmoking;
@@ -15,6 +16,25 @@ public class OverpassModel
     {
         this.overpassApiService = overpassApiService;
 
+        poiKeySearch = new OverpassApiService.PoiKeySearch
+        {
+            UnionSearch =
+            [
+                new OverpassApiService.PoiKeySearch.PoiKeySubSearch
+                {
+                    IntersectionSearch = new Dictionary<string, string> { { "amenity", "bar" } }
+                },
+                new OverpassApiService.PoiKeySearch.PoiKeySubSearch
+                {
+                    IntersectionSearch = new Dictionary<string, string> { { "amenity", "pub" } }
+                },
+                new OverpassApiService.PoiKeySearch.PoiKeySubSearch
+                {
+                    IntersectionSearch = new Dictionary<string, string> { { "bar", "yes" } }
+                }
+            ]
+        };
+
         allAmenities = [];
         amenitiesBySmoking = new Dictionary<OverpassSmoking, OverpassElement[]>();
     }
@@ -23,7 +43,7 @@ public class OverpassModel
     {
         if (lastQueryTime == null || DateTime.UtcNow > lastQueryTime.Value.AddDays(1))
         {
-            allAmenities = await overpassApiService.FetchAmenities("bar");
+            allAmenities = await overpassApiService.FetchPointsOfInterest(poiKeySearch);
             GroupAllAmenitiesBySmoking();
             lastQueryTime = DateTime.UtcNow;
         }

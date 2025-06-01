@@ -15,7 +15,7 @@ public struct Geocoordinates
     {
         // Haversine Distance.
 
-        const double EarthRadiusKilometers = 6371000.0;
+        const double EarthRadiusMeters = 6371.0 * 1000.0;
         const double Deg2Rad = Math.PI / 180.0;
 
         var dLat = (other.Latitude - Latitude) * Deg2Rad;
@@ -27,6 +27,6 @@ public struct Geocoordinates
             * Math.Pow(Math.Sin(dLon / 2.0), 2.0);
         var c = 2.0 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1.0 - a));
 
-        return EarthRadiusKilometers * c;
+        return EarthRadiusMeters * c;
     }
 }
