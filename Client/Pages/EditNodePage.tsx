@@ -67,9 +67,21 @@ class EditNodePageInternal extends React.Component<Props, State> {
   }
 
   private onSubmit(formData: EditNodeFormData): void {
-    apiService.updateSmoking(this.elementId, this.elementType, formData.smokingType, formData.comment)
-      .then(success => console.log(`Successful: ${success}`))
-      .catch(() => console.error("Failure"));
+    switch (formData.submissionMode)
+    {
+      case 'login':
+        apiService.updateSmoking(this.elementId, this.elementType, formData.smokingType, formData.comment)
+          .then(success => console.log(`Successful: ${success}`))
+          .catch(() => console.error("Failure"));
+        break;
+      case 'anonymous':
+        apiService.submitSuggestion(this.elementId, this.elementType, formData.smokingType, formData.comment)
+          .then(success => console.log(`Successful: ${success}`))
+          .catch(() => console.error("Failure"));
+        break;
+      default:
+        console.error("Unhandled error");
+    }
   }
 
   private onBack(): void {

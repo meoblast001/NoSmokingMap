@@ -87,13 +87,35 @@ export default class ApiService {
       });
       if (!response.ok) {
         console.error(`Response status: ${response.status}`);
-        return null;
+        return false;
       }
 
       return true;
     } catch (error) {
       console.error(`Error during fetch: ${error.message}`);
-      return null;
+      return false;
+    }
+  }
+
+  async submitSuggestion(elementId: string, elementType: ElementType, smokingStatus: SmokingStatus,
+    comment: string): Promise<boolean>
+  {
+    try {
+      const formData = { elementId, elementType, smokingStatus, comment };
+      const response = await fetch(`/api/suggestion/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return false;
     }
   }
 }

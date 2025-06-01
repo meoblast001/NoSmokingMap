@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NoSmokingMap.Models;
+using NoSmokingMap.Models.Database;
 using NoSmokingMap.Services;
 using NoSmokingMap.Settings;
 
@@ -20,6 +22,9 @@ builder.Services.Configure<OsmSettings>(builder.Configuration.GetSection("OsmSet
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OsmSettings>>().Value);
 builder.Services.Configure<OverpassSettings>(builder.Configuration.GetSection("OverpassSettings"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OverpassSettings>>().Value);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDatabase")));
 
 builder.Services.AddSingleton<OsmAuthService>();
 builder.Services.AddSingleton<OsmApiService>();
