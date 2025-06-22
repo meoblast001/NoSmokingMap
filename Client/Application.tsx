@@ -4,17 +4,27 @@ import { BottomNavigation, BottomNavigationAction, Box, createTheme, Divider, Th
 import MapIcon from '@mui/icons-material/Map';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
+import LoginIcon from '@mui/icons-material/Login';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 
 import MapPage from './Pages/MapPage';
 import SearchEditPage from './Pages/SearchEditPage';
 import { useLocation } from 'react-router';
 import { AboutPage } from './Pages/AboutPage';
 import EditNodePage from './Pages/EditNodePage';
+import { osmAuthService } from './OsmAuthService';
 
 function AppRoot(): React.ReactNode {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = createTheme({ typography: { fontFamily: `'Roboto', 'Helvetica', 'Arial', sans-serif` } });
+
+  function executeNavigate(path: string) {
+    if (path.at(0) == ':')
+      window.location.href = path.substring(1);
+    else
+      navigate(path);
+  }
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ width: '100dvw', height: '100dvh', display: 'flex', flexDirection: 'column' }}>
@@ -29,14 +39,23 @@ function AppRoot(): React.ReactNode {
 
         <Divider />
 
-        <BottomNavigation showLabels value={location.pathname} onChange={(_event, value) => navigate(value)}>
+        <BottomNavigation showLabels value={location.pathname} onChange={(_event, value) => executeNavigate(value)}>
           <BottomNavigationAction label="Map" icon={<MapIcon />} value="/" />
           <BottomNavigationAction label="Modify" icon={<EditIcon />} value="/edit" />
+          {LoginOrContributeNavigationAction()}
           <BottomNavigationAction label="About" icon={<InfoIcon />} value="/about" />
         </BottomNavigation>
       </Box>
     </ThemeProvider>
   );
+}
+
+function LoginOrContributeNavigationAction(): React.ReactNode {
+  if (osmAuthService.isLoggedIn()) {
+    return <BottomNavigationAction label="Contribute" icon={<ChecklistIcon />} value="/contribute" />;
+  } else {
+    return <BottomNavigationAction label="Login" icon={<LoginIcon />} value=":/osm_auth/login" />;
+  }
 }
 
 export default function App(): React.ReactNode {
