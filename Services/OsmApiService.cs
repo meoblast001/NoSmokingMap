@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Xml;
@@ -53,7 +54,7 @@ public class OsmApiService
                 if (osm == null)
                     throw new OsmApiException("[Read Element] OSM response could not be parsed");
 
-                var result = FirstElementOfGeoTypeOrDefault(geoType, osm);
+                var result = ElementsOfGeoType(geoType, osm).FirstOrDefault();
                 if (result == null)
                     throw new OsmApiException("[Read Element] No element returned");
 
@@ -65,7 +66,50 @@ public class OsmApiService
             default:
                 throw new OsmApiException($"[Read Element] Unknown OSM error [Status: {response.StatusCode}]");
         }
-            
+    }
+
+    public async Task<List<OsmGeo>> ReadElementsByIdsAsync(IEnumerable<(OsmGeoType geoType, long elementId)> query)
+    {
+        var queryGroups = query.GroupBy(elementQuery => elementQuery.geoType)
+            .Select(grouping => (geoType: grouping.Key, elementIds: grouping.Select(value => value.elementId)));
+
+        var results = new List<OsmGeo>();
+
+        foreach (var queryGroup in queryGroups)
+        {
+            var groupResults = await ReadElementsByIdsAsync(queryGroup.geoType, queryGroup.elementIds);
+            results.AddRange(groupResults);
+        }
+
+        return results;
+    }
+
+    private async Task<IEnumerable<OsmGeo>> ReadElementsByIdsAsync(OsmGeoType geoType, IEnumerable<long> elementIds)
+    {
+        var geoTypeUrlString = GeoTypeToPluralUrlString(geoType);
+        var elementsUrlString = string.Join(',',
+            elementIds.Select(elementId => elementId.ToString(CultureInfo.InvariantCulture)));
+
+        var request = new HttpRequestMessage(HttpMethod.Get,
+            $"/api/0.6/{geoTypeUrlString}?{geoTypeUrlString}={elementsUrlString}");
+        var response = await osmHttpClient.SendAsync(request);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+                var osm = xmlSerializer.Deserialize(await response.Content.ReadAsStreamAsync()) as Osm;
+                if (osm == null)
+                    throw new OsmApiException($"[Read Elements / {geoType}] OSM response could not be parsed");
+
+                return ElementsOfGeoType(geoType, osm);
+            case HttpStatusCode.NotFound:
+                throw new OsmApiException($"[Read Elements / {geoType}] Elements not found, IDs {elementsUrlString}");
+            case HttpStatusCode.RequestUriTooLong:
+                throw new OsmApiException($"[Read Elements / {geoType}] Request too long");
+            default:
+                throw new OsmApiException(
+                    $"[Read Elements / {geoType}] Unknown OSM error [Status: {response.StatusCode}]");
+        }
     }
 
     public async Task<long> CreateChangeset(OsmAccessToken accessToken, Changeset changeset)
@@ -174,13 +218,24 @@ public class OsmApiService
         };
     }
 
-    private OsmGeo? FirstElementOfGeoTypeOrDefault(OsmGeoType geoType, Osm osm)
+    private string GeoTypeToPluralUrlString(OsmGeoType geoType)
     {
         return geoType switch
         {
-            OsmGeoType.Node => osm.Nodes.FirstOrDefault(),
-            OsmGeoType.Way => osm.Ways.FirstOrDefault(),
-            OsmGeoType.Relation => osm.Relations.FirstOrDefault(),
+            OsmGeoType.Node => "nodes",
+            OsmGeoType.Way => "ways",
+            OsmGeoType.Relation => "relations",
+            _ => throw new Exception("Unknown geotype")
+        };
+    }
+
+    private OsmGeo[] ElementsOfGeoType(OsmGeoType geoType, Osm osm)
+    {
+        return geoType switch
+        {
+            OsmGeoType.Node => osm.Nodes,
+            OsmGeoType.Way => osm.Ways,
+            OsmGeoType.Relation => osm.Relations,
             _ => throw new Exception("Unknown geotype")
         };
     }
