@@ -5,6 +5,7 @@ using NoSmokingMap.Models.Database;
 using NoSmokingMap.Models.Overpass;
 using NoSmokingMap.Services;
 using NoSmokingMap.Services.OpenStreetMap;
+using NoSmokingMap.Utilities;
 
 namespace NoSmokingMap.Controllers;
 
@@ -36,7 +37,7 @@ public class SuggestionController : Controller
         {
             var query = suggestions.Select(suggestion => (suggestion.ElementType.ToOsmGeoType(), suggestion.ElementId));
             var osmElements = await osmApiService.ReadElementsByIdsAsync(query);
-            var locationViewModels = osmElements.Select(LocationViewModel.TryCreate).Where(x => x != null)
+            var locationViewModels = osmElements.Select(LocationViewModel.TryCreate).WhereNotNull()
                 .ToDictionary(model => model.Id);
 
             foreach (var suggestion in suggestions)
