@@ -1,7 +1,8 @@
-import { Alert, Container, LinearProgress } from "@mui/material";
+import { Alert, Container, LinearProgress, List } from "@mui/material";
 import * as React from "react";
 import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
+import SuggestionCard from "../Components/SuggestionCard";
 
 const EntriesLimit: number = 25;
 
@@ -27,6 +28,7 @@ export class ReviewPage extends React.Component<{}, State> {
     if (this.state.currentPage) {
       return (
         <Container sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+          {this.renderSuggestions()}
         </Container>
       );
     } else if (this.state.error) {
@@ -39,6 +41,24 @@ export class ReviewPage extends React.Component<{}, State> {
       return (
         <Container sx={{ p: 2 }}>
           <LinearProgress />
+        </Container>
+      );
+    }
+  }
+
+  private renderSuggestions(): React.ReactNode {
+    if (this.state.currentPage != null) {
+      const suggestionCards = this.state.currentPage.suggestions
+        .map(suggestion => <SuggestionCard suggestion={suggestion} />);
+      return (
+        <List>
+          {suggestionCards}
+        </List>
+      )
+    } else {
+      return (
+        <Container sx={{ p: 2 }}>
+          <Alert severity='error'>Failed to display suggestions to review.</Alert>
         </Container>
       );
     }
