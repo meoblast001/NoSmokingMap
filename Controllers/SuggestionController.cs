@@ -29,6 +29,7 @@ public class SuggestionController : Controller
     [Route("list_all")]
     public async Task<IActionResult> ListAll(int offset, int limit)
     {
+        var totalSuggestions = dbContext.PoiEditSuggestions.Count();
         var suggestions = dbContext.PoiEditSuggestions.Skip(offset).Take(limit)
             .Select(SuggestionViewModel.Create)
             .ToArray();
@@ -37,7 +38,8 @@ public class SuggestionController : Controller
         {
             var query = suggestions.Select(suggestion => (suggestion.ElementType.ToOsmGeoType(), suggestion.ElementId));
             var osmElements = await osmApiService.ReadElementsByIdsAsync(query);
-            var locationViewModels = osmElements.Select(LocationViewModel.TryCreate).WhereNotNull()
+            var locationViewModels = osmElements.Select(LocationViewModel.TryCreate)
+                .WhereNotNull()
                 .ToDictionary(model => model.Id);
 
             foreach (var suggestion in suggestions)
@@ -49,10 +51,16 @@ public class SuggestionController : Controller
         catch (OsmApiException ex)
         {
             logger.LogError(ex, "OSM API error");
-            return StatusCode(500, "osm error");
+            return StatusCode(500, OsmError.ErrorOsmApi(ex.Message));
         }
 
-        return Json(suggestions);
+        var suggestionsPagination = new SuggestionsPaginationViewModel()
+        {
+            Suggestions = suggestions,
+            TotalEntries = totalSuggestions
+        };
+
+        return Json(suggestionsPagination);
     }
 
     public class SubmitRequestParams
