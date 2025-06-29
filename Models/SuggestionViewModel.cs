@@ -1,4 +1,3 @@
-using System.Text.Json;
 using NoSmokingMap.Models.Database;
 using NoSmokingMap.Models.Overpass;
 
@@ -15,12 +14,11 @@ public class SuggestionViewModel
 
     public static SuggestionViewModel Create(PointOfInterestEditSuggestionDbo dbo)
     {
-        var changes = JsonSerializer.Deserialize<PointOfInterestChanges>(dbo.Changes);
         return new SuggestionViewModel()
         {
             ElementId = dbo.ElementId,
-            ElementType = Enum.Parse<OverpassElementType>(dbo.ElementType),
-            SmokingStatus = Enum.Parse<OverpassSmoking>(changes.Smoking),
+            ElementType = dbo.ElementType,
+            SmokingStatus = dbo.Changes.Smoking,
             Comment = dbo.Comment
         };
     }

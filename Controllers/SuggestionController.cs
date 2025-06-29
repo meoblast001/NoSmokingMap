@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
 using NoSmokingMap.Models.Database;
@@ -72,15 +71,15 @@ public class SuggestionController : Controller
             return BadRequest();
         }
 
-        var poiChanges = new PointOfInterestChanges()
+        var poiChanges = new PointOfInterestChangesDbo()
         {
-            Smoking = requestParams.SmokingStatus.ToString()
+            Smoking = requestParams.SmokingStatus
         };
         var poiEditSuggestion = new PointOfInterestEditSuggestionDbo()
         {
             ElementId = elementIdNum,
-            ElementType = requestParams.ElementType.ToString(),
-            Changes = JsonSerializer.Serialize(poiChanges),
+            ElementType = requestParams.ElementType,
+            Changes = poiChanges,
             Comment = requestParams.Comment
         };
         dbContext.PoiEditSuggestions.Add(poiEditSuggestion);

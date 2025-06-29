@@ -6,6 +6,7 @@ using NoSmokingMap.Models;
 using NoSmokingMap.Models.Database;
 using NoSmokingMap.Services;
 using NoSmokingMap.Settings;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,14 @@ builder.Services.Configure<OverpassSettings>(builder.Configuration.GetSection("O
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OverpassSettings>>().Value);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ApplicationDatabase")));
+{
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.Configuration.GetConnectionString("ApplicationDatabase"));
+    dataSourceBuilder.EnableDynamicJson();
+    var jsonSerializerOptions = new JsonSerializerOptions();
+    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    dataSourceBuilder.ConfigureJsonOptions(jsonSerializerOptions);
+    options.UseNpgsql(dataSourceBuilder.Build());
+});
 
 builder.Services.AddSingleton<OsmAuthService>();
 builder.Services.AddSingleton<OsmApiService>();

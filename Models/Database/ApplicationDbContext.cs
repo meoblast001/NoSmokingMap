@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NoSmokingMap.Models.Overpass;
 
 namespace NoSmokingMap.Models.Database;
 
@@ -16,5 +18,7 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<PointOfInterestEditSuggestionDbo>().Property(dbo => dbo.CreatedOn)
             .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+        modelBuilder.Entity<PointOfInterestEditSuggestionDbo>().Property(dbo => dbo.ElementType)
+            .HasConversion(new EnumToStringConverter<OverpassElementType>());
     }
 }
