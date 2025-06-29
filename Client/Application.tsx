@@ -13,6 +13,7 @@ import { useLocation } from 'react-router';
 import { AboutPage } from './Pages/AboutPage';
 import EditNodePage from './Pages/EditNodePage';
 import { osmAuthService } from './OsmAuthService';
+import { ReviewPage } from './Pages/ReviewPage';
 
 function AppRoot(): React.ReactNode {
   const location = useLocation();
@@ -33,6 +34,7 @@ function AppRoot(): React.ReactNode {
             <Route index element={<MapPage />} />
             <Route path="/edit" element={<SearchEditPage />} />
             <Route path="/edit/:elementType/:elementId" element={<EditNodePage />} />
+            <Route path="/review" element={<ReviewPage />} />
             <Route path="/about" element={<AboutPage />} />
           </Routes>
         </Box>
@@ -52,7 +54,7 @@ function AppRoot(): React.ReactNode {
 
 function LoginOrContributeNavigationAction(): React.ReactNode {
   if (osmAuthService.isLoggedIn()) {
-    return <BottomNavigationAction label="Contribute" icon={<ChecklistIcon />} value="/contribute" />;
+    return <BottomNavigationAction label="Review" icon={<ChecklistIcon />} value="/review" />;
   } else {
     return <BottomNavigationAction label="Login" icon={<LoginIcon />} value=":/osm_auth/login" />;
   }

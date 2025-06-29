@@ -1,6 +1,7 @@
 import { ElementType } from './Models/ElementType';
 import LocationModel from './Models/LocationModel';
 import { SmokingStatus } from './Models/SmokingStatus';
+import SuggestionsPaginationModel from './Models/SuggestionsPaginationModel';
 
 export default class ApiService {
   async fetchLocations(): Promise<LocationModel[] | null> {
@@ -94,6 +95,25 @@ export default class ApiService {
     } catch (error) {
       console.error(`Error during fetch: ${error.message}`);
       return false;
+    }
+  }
+
+  async listAllSuggestions(offset: number, limit: number): Promise<SuggestionsPaginationModel> {
+    try {
+      const params = new URLSearchParams();
+      params.append('offset', offset.toString());
+      params.append('limit', limit.toString());
+      const response = await fetch(`/api/suggestion/list_all?${params}`);
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return null;
+      }
+
+      const json: SuggestionsPaginationModel | null = await response.json();
+      return json;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return null;
     }
   }
 
