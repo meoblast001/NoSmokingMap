@@ -15,7 +15,7 @@ public class LocationViewModel
 
     public double? Lon { get; private set; }
 
-    public string? Smoking { get; private set; }
+    public OverpassSmoking? Smoking { get; private set; }
 
     public static LocationViewModel? TryCreate(OverpassElement element)
     {
@@ -33,7 +33,7 @@ public class LocationViewModel
             Name = element.Tags.Name,
             Lat = location.Value.Latitude,
             Lon = location.Value.Longitude,
-            Smoking = element.Tags.Smoking?.ToString()
+            Smoking = element.Tags.Smoking
         };
     }
 
@@ -53,7 +53,11 @@ public class LocationViewModel
             Id = osmGeo.Id.Value,
             Type = osmGeo.Type.ToString().ToLowerInvariant(),
             Name = name,
-            Smoking = osmGeo.Tags.TryGetValue("smoking", out var smoking) ? smoking : null
+            Smoking = osmGeo.Tags.TryGetValue("smoking", out var smoking)
+                ? (Enum.TryParse<OverpassSmoking>(smoking, ignoreCase: true, out var smokingEnum)
+                    ? smokingEnum
+                    : null)
+                : null
         };
     }
 }
