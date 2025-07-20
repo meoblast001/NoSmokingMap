@@ -31,12 +31,14 @@ public class SuggestionController : Controller
     {
         var totalSuggestions = dbContext.PoiEditSuggestions.Count();
         var suggestions = dbContext.PoiEditSuggestions.Skip(offset).Take(limit)
-            .Select(SuggestionViewModel.Create)
+            .AsEnumerable()
+            .Select(dbo => (dbo, viewModel: SuggestionViewModel.Create(dbo)))
             .ToArray();
 
         try
         {
-            var query = suggestions.Select(suggestion => (suggestion.ElementType.ToOsmGeoType(), suggestion.ElementId));
+            var query = suggestions
+                .Select(suggestion => (suggestion.dbo.ElementType.ToOsmGeoType(), suggestion.dbo.ElementId));
             var osmElements = await osmApiService.ReadElementsByIdsAsync(query);
             var locationViewModels = osmElements.Select(LocationViewModel.TryCreate)
                 .WhereNotNull()
@@ -44,8 +46,8 @@ public class SuggestionController : Controller
 
             foreach (var suggestion in suggestions)
             {
-                if (locationViewModels.TryGetValue(suggestion.ElementId, out var model))
-                    suggestion.Location = model;
+                if (locationViewModels.TryGetValue(suggestion.dbo.ElementId, out var model))
+                    suggestion.viewModel.Location = model;
             }
         }
         catch (OsmApiException ex)
@@ -56,7 +58,7 @@ public class SuggestionController : Controller
 
         var suggestionsPagination = new SuggestionsPaginationViewModel()
         {
-            Suggestions = suggestions,
+            Suggestions = suggestions.Select(s => s.viewModel).ToArray(),
             TotalEntries = totalSuggestions
         };
 

@@ -1,9 +1,8 @@
-import { ElementType } from "react";
+import LocationModel from "./LocationModel";
 import { SmokingStatus } from "./SmokingStatus";
 
 export default interface SuggestionModel {
-  elementId: number;
-  elementType: ElementType;
-  smokingStatus: SmokingStatus;
+  newSmoking: SmokingStatus;
   comment: string;
+  location: LocationModel;
 }

@@ -5,9 +5,7 @@ namespace NoSmokingMap.Models;
 
 public class SuggestionViewModel
 {
-    public required long ElementId { get; set; }
-    public required OverpassElementType ElementType { get; set; }
-    public required OverpassSmoking SmokingStatus { get; set; }
+    public required OverpassSmoking NewSmoking { get; set; }
     public required string Comment { get; set; }
 
     public LocationViewModel? Location { get; set; }
@@ -16,9 +14,7 @@ public class SuggestionViewModel
     {
         return new SuggestionViewModel()
         {
-            ElementId = dbo.ElementId,
-            ElementType = dbo.ElementType,
-            SmokingStatus = dbo.Changes.Smoking,
+            NewSmoking = dbo.Changes.Smoking,
             Comment = dbo.Comment
         };
     }

@@ -21,8 +21,12 @@ export default class AmenityCard extends React.Component<Props> {
             <Box sx={{ display: 'flex', flexDirection: 'row' }}>
               <Box sx={{ flex: 1 }}>
                 <Typography>
-                  <b>{this.props.location.name}</b><br />
-                  Smoking: {this.props.location.smoking != null ? this.props.location.smoking : "Unknown"}
+                  <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+                    {this.props.location.name}
+                  </span>
+                  <div style={{ paddingLeft: 5 }}>
+                    Smoking: {this.props.location.smoking != null ? this.props.location.smoking : "Unknown"}
+                  </div>
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
