@@ -41,7 +41,7 @@ public class OverpassApiService : IDisposable
 
     public async Task<OverpassElement[]> FetchPointsOfInterest(PoiKeySearch keySearch)
     {
-        var overpassQueryBuilder = new OverpassQueryBuilder(200)
+        var overpassQueryBuilder = new OverpassQueryBuilder(timeout: 200)
             .SetSearchAreaReference(overpassSettings.SearchAreaReference);
         foreach (var subSearch in keySearch.UnionSearch)
             overpassQueryBuilder.AppendSearchByTags(subSearch.IntersectionSearch);

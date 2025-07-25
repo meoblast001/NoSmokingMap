@@ -23,6 +23,8 @@ builder.Services.Configure<OsmSettings>(builder.Configuration.GetSection("OsmSet
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OsmSettings>>().Value);
 builder.Services.Configure<OverpassSettings>(builder.Configuration.GetSection("OverpassSettings"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<OverpassSettings>>().Value);
+builder.Services.Configure<MapSettings>(builder.Configuration.GetSection("MapSettings"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<MapSettings>>().Value);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

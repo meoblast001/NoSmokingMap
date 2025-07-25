@@ -22,10 +22,11 @@ export default class MapPage extends React.Component<{}, State> {
   }
 
   render(): React.ReactNode {
+    const defaultCoordinates: [number, number] = JSON.parse(document.getElementById('default-coordinates').innerHTML);
     if (this.state.locations) {
       return (
         <div style={{ width: '100%', height: '100%' }}>
-          <MapContainer center={[52.520008, 13.404954]} zoom={11}>
+          <MapContainer center={defaultCoordinates} zoom={11}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></TileLayer>
             {this.getMarkers()}
           </MapContainer>
