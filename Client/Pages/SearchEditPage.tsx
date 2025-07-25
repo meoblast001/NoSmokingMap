@@ -60,7 +60,9 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
     if (this.state.results != null)
     {
       const resultCards = this.state.results
-        .map(result => <AmenityCard location={result} onClick={() => this.onAmenityClicked(result)} />);
+        .map(result => (
+          <AmenityCard key={result.id} location={result} onClick={() => this.onAmenityClicked(result)} />
+        ));
       return (
         <List>
           {resultCards}

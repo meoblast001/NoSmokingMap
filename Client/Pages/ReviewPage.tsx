@@ -58,7 +58,7 @@ export class ReviewPage extends React.Component<{}, State> {
     if (this.state.currentPage != null) {
       const suggestionCards = this.state.currentPage.suggestions
         .map(suggestion => (
-          <SuggestionCard suggestion={suggestion}
+          <SuggestionCard key={suggestion.id} suggestion={suggestion}
                           onApprove={() => this.onSubmitReview('accept')}
                           onReject={() => this.onSubmitReview('reject')} />
         ));

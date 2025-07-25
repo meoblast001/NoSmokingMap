@@ -5,6 +5,7 @@ namespace NoSmokingMap.Models;
 
 public class SuggestionViewModel
 {
+    public required int Id { get; set; }
     public required OverpassSmoking NewSmoking { get; set; }
     public required string Comment { get; set; }
 
@@ -14,6 +15,7 @@ public class SuggestionViewModel
     {
         return new SuggestionViewModel()
         {
+            Id = dbo.Id,
             NewSmoking = dbo.Changes.Smoking,
             Comment = dbo.Comment
         };
