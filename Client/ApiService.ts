@@ -138,6 +138,26 @@ export default class ApiService {
       return false;
     }
   }
+
+  async reviewSuggestion(suggestionId: number, approve: boolean): Promise<boolean> {
+    try {
+      const formData = { suggestionId, approve };
+      const response = await fetch(`/api/suggestion/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!response.ok) {
+        console.error(`Response status: ${response.status}`);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error during fetch: ${error.message}`);
+      return false;
+    }
+  }
 }
 
 const apiService = new ApiService();

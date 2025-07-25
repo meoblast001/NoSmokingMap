@@ -16,13 +16,15 @@ public class SuggestionController : Controller
 {
     private readonly ApplicationDbContext dbContext;
     private readonly OsmApiService osmApiService;
+    private readonly ElementUpdateService elementUpdateService;
     private readonly ILogger<SuggestionController> logger;
 
     public SuggestionController(ApplicationDbContext dbContext, OsmApiService osmApiService,
-        ILogger<SuggestionController> logger)
+        ElementUpdateService elementUpdateService, ILogger<SuggestionController> logger)
     {
         this.dbContext = dbContext;
         this.osmApiService = osmApiService;
+        this.elementUpdateService = elementUpdateService;
         this.logger = logger;
     }
 
@@ -96,6 +98,38 @@ public class SuggestionController : Controller
         dbContext.PoiEditSuggestions.Add(poiEditSuggestion);
         await dbContext.SaveChangesAsync();
 
+        return Ok();
+    }
+
+    public class ReviewRequestParams
+    {
+        public required int SuggestionId { get; set; }
+        public required bool Approve { get; set; }
+    }
+
+    [Route("review")]
+    [HttpPost]
+    public async Task<IActionResult> Review([FromBody] ReviewRequestParams requestParams)
+    {
+        OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);
+        if (accessToken == null)
+        {
+            return Unauthorized(OsmError.ErrorUnauthorized);
+        }
+
+        var suggestionDbo = dbContext.PoiEditSuggestions.FirstOrDefault(dbo => dbo.Id == requestParams.SuggestionId);
+
+        if (suggestionDbo == null)
+            return NotFound();
+
+        if (requestParams.Approve)
+        {
+            await elementUpdateService.UpdateSmoking(accessToken, suggestionDbo.ElementId, suggestionDbo.ElementType,
+                suggestionDbo.Changes.Smoking, suggestionDbo.Comment);
+        }
+
+        dbContext.PoiEditSuggestions.Remove(suggestionDbo);
+        await dbContext.SaveChangesAsync();
         return Ok();
     }
 }

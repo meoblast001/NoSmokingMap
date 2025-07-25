@@ -3,6 +3,7 @@ import * as React from "react";
 import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
 import SuggestionCard from "../Components/SuggestionCard";
+import SuggestionModel from "../Models/SuggestionModel";
 
 const EntriesPerPage: number = 25;
 
@@ -11,14 +12,15 @@ type ReviewStatus = 'accept' | 'reject';
 interface State {
   currentPageIndex: number;
   currentPage: SuggestionsPaginationModel | null;
-  error: boolean;
+  error: 'list' | 'review' | null;
+  selectedSuggestion: SuggestionModel | null;
   dialogOpen: ReviewStatus | null;
 }
 
 export class ReviewPage extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    this.state = { currentPageIndex: 0, currentPage: null, error: false, dialogOpen: null };
+    this.state = { currentPageIndex: 0, currentPage: null, error: null, selectedSuggestion: null, dialogOpen: null };
   }
 
   private get totalPages() {
@@ -39,10 +41,16 @@ export class ReviewPage extends React.Component<{}, State> {
           {this.renderConfirmationDialog('reject')}
         </Container>
       );
-    } else if (this.state.error) {
+    } else if (this.state.error == 'list') {
       return (
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>Failed to get list of contributions.</Alert>
+        </Container>
+      );
+    } else if (this.state.error == 'review') {
+      return (
+        <Container sx={{ p: 2 }}>
+          <Alert severity='error'>Failed to submit review.</Alert>
         </Container>
       );
     } else {
@@ -59,8 +67,8 @@ export class ReviewPage extends React.Component<{}, State> {
       const suggestionCards = this.state.currentPage.suggestions
         .map(suggestion => (
           <SuggestionCard key={suggestion.id} suggestion={suggestion}
-                          onApprove={() => this.onSubmitReview('accept')}
-                          onReject={() => this.onSubmitReview('reject')} />
+                          onApprove={() => this.onSubmitReview('accept', suggestion)}
+                          onReject={() => this.onSubmitReview('reject', suggestion)} />
         ));
       return (
         <List>
@@ -76,9 +84,8 @@ export class ReviewPage extends React.Component<{}, State> {
     }
   }
 
-  private onSubmitReview(reviewStatus: ReviewStatus): void {
-    console.log(`Change review status to ${reviewStatus}`)
-    this.setState({ dialogOpen: reviewStatus });
+  private onSubmitReview(reviewStatus: ReviewStatus, suggestion: SuggestionModel): void {
+    this.setState({ dialogOpen: reviewStatus, selectedSuggestion: suggestion });
   }
 
   private renderConfirmationDialog(reviewStatus: ReviewStatus): React.ReactNode {
@@ -92,7 +99,7 @@ export class ReviewPage extends React.Component<{}, State> {
         break;
     }
     return (
-      <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onConfirmation(false)}>
+      <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onConfirmation(reviewStatus, false)}>
         <DialogTitle>
           Confirmation
         </DialogTitle>
@@ -100,16 +107,22 @@ export class ReviewPage extends React.Component<{}, State> {
         <DialogContent>
           <DialogContentText>{contentText}</DialogContentText>
           <DialogActions>
-            <Button onClick={() => this.onConfirmation(true)}>Yes</Button>
-            <Button onClick={() => this.onConfirmation(false)}>No</Button>
+            <Button onClick={() => this.onConfirmation(reviewStatus, true)}>Yes</Button>
+            <Button onClick={() => this.onConfirmation(reviewStatus, false)}>No</Button>
           </DialogActions>
         </DialogContent>
       </Dialog>
     )
   }
 
-  private onConfirmation(confirmation: boolean) {
+  private onConfirmation(reviewStatus: ReviewStatus, confirmation: boolean) {
     if (confirmation) {
+      apiService.reviewSuggestion(this.state.selectedSuggestion.id, this.state.dialogOpen == 'accept')
+        .then(success => {
+          console.log(`Successful: ${success}`);
+          this.updateSuggestionsList(this.state.currentPageIndex);
+        })
+        .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'review'}))
     } else {
       this.setState({ dialogOpen: null });
     }
@@ -117,8 +130,9 @@ export class ReviewPage extends React.Component<{}, State> {
 
   private updateSuggestionsList(pageIndex: number): void {
     apiService.listAllSuggestions(this.state.currentPageIndex * EntriesPerPage, EntriesPerPage)
-      .then(page => this.setState({ currentPage: page, currentPageIndex: pageIndex, error: page == null }))
-      .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: true }))
+      .then(page => this.setState({ currentPage: page, currentPageIndex: pageIndex,
+                                    error: page == null ? 'list' : null }))
+      .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'list' }))
   }
 
   private onPageChange(evt: React.ChangeEvent, page: number) {

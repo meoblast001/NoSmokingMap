@@ -13,11 +13,14 @@ namespace NoSmokingMap.Controllers;
 public class OsmController : Controller
 {
     private readonly OsmApiService osmApiService;
+    private readonly ElementUpdateService elementUpdateService;
     private readonly ILogger<OsmController> logger;
 
-    public OsmController(OsmApiService osmApiService, ILogger<OsmController> logger)
+    public OsmController(OsmApiService osmApiService, ElementUpdateService elementUpdateService,
+        ILogger<OsmController> logger)
     {
         this.osmApiService = osmApiService;
+        this.elementUpdateService = elementUpdateService;
         this.logger = logger;
     }
 
@@ -81,18 +84,8 @@ public class OsmController : Controller
 
         try
         {
-            var osmElement = await osmApiService.ReadElementByIdAsync(model.ElementType.ToOsmGeoType(), elementIdNum);
-
-            var changeset = OsmChangesetFactory.Create($"Updating smoking status. User comment: {model.Comment}");
-            long changesetId = await osmApiService.CreateChangeset(accessToken, changeset);
-
-            osmElement.ChangeSetId = changesetId;
-            osmElement.Tags["smoking"] = model.SmokingStatus.ToOsmTagString();
-
-            await osmApiService.UpdateElementByIdAsync(accessToken, osmElement);
-
-            await osmApiService.CloseChangeset(accessToken, changesetId);
-
+            await elementUpdateService.UpdateSmoking(accessToken, elementIdNum, model.ElementType, model.SmokingStatus,
+                model.Comment);
             return Ok();
         }
         catch (OsmApiException ex)

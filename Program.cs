@@ -39,6 +39,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSingleton<OsmAuthService>();
 builder.Services.AddSingleton<OsmApiService>();
 builder.Services.AddSingleton<OverpassApiService>();
+builder.Services.AddSingleton<ElementUpdateService>();
 
 builder.Services.AddSingleton<OverpassModel>();
 
