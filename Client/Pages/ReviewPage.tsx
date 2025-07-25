@@ -1,4 +1,4 @@
-import { Alert, Container, LinearProgress, List, Pagination } from "@mui/material";
+import { Alert, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, LinearProgress, List, Pagination } from "@mui/material";
 import * as React from "react";
 import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
@@ -6,16 +6,19 @@ import SuggestionCard from "../Components/SuggestionCard";
 
 const EntriesPerPage: number = 25;
 
+type ReviewStatus = 'accept' | 'reject';
+
 interface State {
   currentPageIndex: number;
   currentPage: SuggestionsPaginationModel | null;
   error: boolean;
+  dialogOpen: ReviewStatus | null;
 }
 
 export class ReviewPage extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    this.state = { currentPageIndex: 0, currentPage: null, error: false };
+    this.state = { currentPageIndex: 0, currentPage: null, error: false, dialogOpen: null };
   }
 
   private get totalPages() {
@@ -32,6 +35,8 @@ export class ReviewPage extends React.Component<{}, State> {
         <Container sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
           {this.renderSuggestions()} 
           <Pagination count={this.totalPages} page={this.state.currentPageIndex + 1} onChange={this.onPageChange} />
+          {this.renderConfirmationDialog('accept')}
+          {this.renderConfirmationDialog('reject')}
         </Container>
       );
     } else if (this.state.error) {
@@ -52,7 +57,11 @@ export class ReviewPage extends React.Component<{}, State> {
   private renderSuggestions(): React.ReactNode {
     if (this.state.currentPage != null) {
       const suggestionCards = this.state.currentPage.suggestions
-        .map(suggestion => <SuggestionCard suggestion={suggestion} />);
+        .map(suggestion => (
+          <SuggestionCard suggestion={suggestion}
+                          onApprove={() => this.onSubmitReview('accept')}
+                          onReject={() => this.onSubmitReview('reject')} />
+        ));
       return (
         <List>
           {suggestionCards}
@@ -64,6 +73,45 @@ export class ReviewPage extends React.Component<{}, State> {
           <Alert severity='error'>Failed to display suggestions to review.</Alert>
         </Container>
       );
+    }
+  }
+
+  private onSubmitReview(reviewStatus: ReviewStatus): void {
+    console.log(`Change review status to ${reviewStatus}`)
+    this.setState({ dialogOpen: reviewStatus });
+  }
+
+  private renderConfirmationDialog(reviewStatus: ReviewStatus): React.ReactNode {
+    let contentText: React.ReactNode;
+    switch (reviewStatus) {
+      case 'accept':
+        contentText = <span>Are you sure you would like to approve these changes?</span>;
+        break;
+      case 'reject':
+        contentText = <span>Are you sure you would like to reject these changes?</span>;
+        break;
+    }
+    return (
+      <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onConfirmation(false)}>
+        <DialogTitle>
+          Confirmation
+        </DialogTitle>
+
+        <DialogContent>
+          <DialogContentText>{contentText}</DialogContentText>
+          <DialogActions>
+            <Button onClick={() => this.onConfirmation(true)}>Yes</Button>
+            <Button onClick={() => this.onConfirmation(false)}>No</Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  private onConfirmation(confirmation: boolean) {
+    if (confirmation) {
+    } else {
+      this.setState({ dialogOpen: null });
     }
   }
 

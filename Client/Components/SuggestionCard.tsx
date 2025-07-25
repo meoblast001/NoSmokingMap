@@ -6,6 +6,8 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 interface Props {
   suggestion: SuggestionModel;
+  onApprove: () => void;
+  onReject: () => void;
 }
 
 export default class SuggestionCard extends React.Component<Props> {
@@ -30,10 +32,10 @@ export default class SuggestionCard extends React.Component<Props> {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flex: 0, flexDirection: 'column',
                 justifyContent: 'center', gap: 1 }}>
-              <Button variant="outlined">
+              <Button variant="outlined" onClick={() => this.props.onApprove()}>
                 <ThumbUpIcon sx={{ textAlign: 'center', verticalAlign: 'middle' }}/>
               </Button>
-              <Button variant="outlined">
+              <Button variant="outlined" onClick={() => this.props.onReject()}>
                 <ThumbDownIcon sx={{ textAlign: 'center', verticalAlign: 'middle' }}/>
               </Button>
             </Box>
