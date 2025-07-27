@@ -139,9 +139,9 @@ export default class ApiService {
     }
   }
 
-  async reviewSuggestion(suggestionId: number, approve: boolean): Promise<boolean> {
+  async reviewSuggestion(suggestionId: number, approve: boolean, comment: string): Promise<boolean> {
     try {
-      const formData = { suggestionId, approve };
+      const formData = { suggestionId, approve, comment };
       const response = await fetch(`/api/suggestion/review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

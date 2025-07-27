@@ -105,6 +105,7 @@ public class SuggestionController : Controller
     {
         public required int SuggestionId { get; set; }
         public required bool Approve { get; set; }
+        public required string Comment { get; set; }
     }
 
     [Route("review")]
@@ -125,7 +126,7 @@ public class SuggestionController : Controller
         if (requestParams.Approve)
         {
             await elementUpdateService.UpdateSmoking(accessToken, suggestionDbo.ElementId, suggestionDbo.ElementType,
-                suggestionDbo.Changes.Smoking, suggestionDbo.Comment);
+                suggestionDbo.Changes.Smoking, requestParams.Comment);
         }
 
         dbContext.PoiEditSuggestions.Remove(suggestionDbo);

@@ -1,4 +1,17 @@
-import { Alert, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, LinearProgress, List, Pagination } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  LinearProgress,
+  List,
+  Pagination,
+  TextField
+} from "@mui/material";
 import * as React from "react";
 import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
@@ -15,12 +28,20 @@ interface State {
   error: 'list' | 'review' | null;
   selectedSuggestion: SuggestionModel | null;
   dialogOpen: ReviewStatus | null;
+  modifiedComment: string;
 }
 
 export class ReviewPage extends React.Component<{}, State> {
   constructor(props: {}) {
     super(props);
-    this.state = { currentPageIndex: 0, currentPage: null, error: null, selectedSuggestion: null, dialogOpen: null };
+    this.state = {
+      currentPageIndex: 0,
+      currentPage: null,
+      error: null,
+      selectedSuggestion: null,
+      dialogOpen: null,
+      modifiedComment: ""
+    };
   }
 
   private get totalPages() {
@@ -85,47 +106,64 @@ export class ReviewPage extends React.Component<{}, State> {
   }
 
   private onSubmitReview(reviewStatus: ReviewStatus, suggestion: SuggestionModel): void {
-    this.setState({ dialogOpen: reviewStatus, selectedSuggestion: suggestion });
+    this.setState({
+      dialogOpen: reviewStatus,
+      selectedSuggestion: suggestion,
+      modifiedComment: suggestion.comment
+    });
   }
 
   private renderConfirmationDialog(reviewStatus: ReviewStatus): React.ReactNode {
+    const initialComment = this.state.selectedSuggestion != null ? this.state.selectedSuggestion.comment : "";
+
     let contentText: React.ReactNode;
+    let form: React.ReactNode = null;
     switch (reviewStatus) {
       case 'accept':
-        contentText = <span>Are you sure you would like to approve these changes?</span>;
+        contentText = (<span>Are you sure you would like to approve these changes?</span>);
+        form = (
+          <Container>
+            <TextField label="Comment About Changes" multiline rows={2} defaultValue={initialComment}
+                      onChange={event => this.setState({ modifiedComment: event.target.value })}
+                      sx={{ width: '100%', marginTop: 2 }}/>
+          </Container>
+        );
         break;
       case 'reject':
-        contentText = <span>Are you sure you would like to reject these changes?</span>;
+        contentText = (<span>Are you sure you would like to reject these changes?</span>);
         break;
     }
+
     return (
-      <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onConfirmation(reviewStatus, false)}>
+      <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onCancel()}>
         <DialogTitle>
           Confirmation
         </DialogTitle>
-
         <DialogContent>
           <DialogContentText>{contentText}</DialogContentText>
+          {form}
           <DialogActions>
-            <Button onClick={() => this.onConfirmation(reviewStatus, true)}>Yes</Button>
-            <Button onClick={() => this.onConfirmation(reviewStatus, false)}>No</Button>
+            <Button onClick={() => this.onConfirmation(reviewStatus, this.state.modifiedComment)}>Yes</Button>
+            <Button onClick={() => this.onCancel()}>No</Button>
           </DialogActions>
         </DialogContent>
       </Dialog>
     )
   }
 
-  private onConfirmation(reviewStatus: ReviewStatus, confirmation: boolean) {
-    if (confirmation) {
-      apiService.reviewSuggestion(this.state.selectedSuggestion.id, this.state.dialogOpen == 'accept')
-        .then(success => {
-          console.log(`Successful: ${success}`);
-          this.updateSuggestionsList(this.state.currentPageIndex);
-        })
-        .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'review'}))
-    } else {
-      this.setState({ dialogOpen: null });
-    }
+  private onConfirmation(reviewStatus: ReviewStatus, comment: string) {
+    const approve = reviewStatus == 'accept';
+    apiService.reviewSuggestion(this.state.selectedSuggestion.id, approve, comment)
+      .then(success => {
+        console.log(`Successful: ${success}`);
+        this.updateSuggestionsList(this.state.currentPageIndex);
+        this.setState({ dialogOpen: null });
+      })
+      .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'review'}));
+  }
+
+  private onCancel() {
+    this.setState({ dialogOpen: null });
   }
 
   private updateSuggestionsList(pageIndex: number): void {
