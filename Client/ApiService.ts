@@ -160,5 +160,14 @@ export default class ApiService {
   }
 }
 
+let osmRegistrationUri: string | undefined;
+
+function getOsmRegistrationUri(): string {
+  if (osmRegistrationUri)
+    return osmRegistrationUri;
+  osmRegistrationUri = document.getElementById('osm-registration-uri').innerHTML;
+  return osmRegistrationUri;
+}
+
 const apiService = new ApiService();
-export { apiService };
+export { apiService, getOsmRegistrationUri };

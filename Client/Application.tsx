@@ -6,13 +6,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import LoginIcon from '@mui/icons-material/Login';
 import ChecklistIcon from '@mui/icons-material/Checklist';
-
+import { useLocation } from 'react-router';
+import { osmAuthService } from './OsmAuthService';
 import MapPage from './Pages/MapPage';
 import SearchEditPage from './Pages/SearchEditPage';
-import { useLocation } from 'react-router';
 import { AboutPage } from './Pages/AboutPage';
 import EditNodePage from './Pages/EditNodePage';
-import { osmAuthService } from './OsmAuthService';
 import { ReviewPage } from './Pages/ReviewPage';
 
 function AppRoot(): React.ReactNode {
