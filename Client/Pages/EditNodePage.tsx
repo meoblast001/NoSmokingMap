@@ -6,6 +6,7 @@ import { ElementType } from '../Models/ElementType';
 import LocationModel from '../Models/LocationModel';
 import EditNodeForm from '../Components/EditNodeForm';
 import { FormData as EditNodeFormData } from '../Components/EditNodeForm';
+import { SnackbarContext } from '../SnackbarContext';
 
 interface Props {
   params: Params<string>
@@ -18,6 +19,9 @@ interface State {
 }
 
 class EditNodePageInternal extends React.Component<Props, State> {
+  static contextType = SnackbarContext;
+  declare context: React.ContextType<typeof SnackbarContext>;
+
   private elementType: ElementType;
   private elementId: string;
 
@@ -71,17 +75,36 @@ class EditNodePageInternal extends React.Component<Props, State> {
     {
       case 'login':
         apiService.updateSmoking(this.elementId, this.elementType, formData.smokingType, formData.comment)
-          .then(success => console.log(`Successful: ${success}`))
-          .catch(() => console.error("Failure"));
+          .then(success => {
+            if (success) {
+              this.onSubmissionSuccess();
+            } else
+              throw 'failure';
+          })
+          .catch(() => this.onSubmissionError());
         break;
       case 'anonymous':
         apiService.submitSuggestion(this.elementId, this.elementType, formData.smokingType, formData.comment)
-          .then(success => console.log(`Successful: ${success}`))
-          .catch(() => console.error("Failure"));
+          .then(success => {
+            if (success) {
+              this.onSubmissionSuccess();
+            } else
+              throw 'failure';
+          })
+          .catch(() => this.onSubmissionError());
         break;
       default:
-        console.error("Unhandled error");
+        this.onSubmissionError();
     }
+  }
+
+  private onSubmissionSuccess(): void {
+    this.context.display({ message: "Successfully submitted changes!" });
+    this.props.navigate("/edit");
+  }
+
+  private onSubmissionError(): void {
+    this.context.display({ message: "An error occurred while submitting. Please try again."});
   }
 
   private onBack(): void {

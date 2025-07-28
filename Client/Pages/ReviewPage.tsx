@@ -17,6 +17,7 @@ import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
 import SuggestionCard from "../Components/SuggestionCard";
 import SuggestionModel from "../Models/SuggestionModel";
+import { SnackbarContext } from "../SnackbarContext";
 
 const EntriesPerPage: number = 25;
 
@@ -32,6 +33,9 @@ interface State {
 }
 
 export class ReviewPage extends React.Component<{}, State> {
+  static contextType = SnackbarContext;
+  declare context: React.ContextType<typeof SnackbarContext>;
+
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -153,11 +157,15 @@ export class ReviewPage extends React.Component<{}, State> {
 
   private onConfirmation(reviewStatus: ReviewStatus, comment: string) {
     const approve = reviewStatus == 'accept';
+    const snackbarMessage = approve ? "Successfully approved!" : "Successfully rejected!";
     apiService.reviewSuggestion(this.state.selectedSuggestion.id, approve, comment)
       .then(success => {
-        console.log(`Successful: ${success}`);
-        this.updateSuggestionsList(this.state.currentPageIndex);
-        this.setState({ dialogOpen: null });
+        if (success) {
+          this.updateSuggestionsList(this.state.currentPageIndex);
+          this.context.display({ message: snackbarMessage });
+          this.setState({ dialogOpen: null });
+        } else
+          throw 'failure';
       })
       .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'review'}));
   }

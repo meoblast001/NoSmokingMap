@@ -13,6 +13,7 @@ import SearchEditPage from './Pages/SearchEditPage';
 import { AboutPage } from './Pages/AboutPage';
 import EditNodePage from './Pages/EditNodePage';
 import { ReviewPage } from './Pages/ReviewPage';
+import SnackbarProvider from './Components/SnackbarProvider';
 
 function AppRoot(): React.ReactNode {
   const location = useLocation();
@@ -28,15 +29,18 @@ function AppRoot(): React.ReactNode {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ width: '100dvw', height: '100dvh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ flex: 1, overflow: 'scroll' }}>
-          <Routes>
-            <Route index element={<MapPage />} />
-            <Route path="/edit" element={<SearchEditPage />} />
-            <Route path="/edit/:elementType/:elementId" element={<EditNodePage />} />
-            <Route path="/review" element={<ReviewPage />} />
-            <Route path="/about" element={<AboutPage />} />
-          </Routes>
-        </Box>
+
+        <SnackbarProvider>
+          <Box sx={{ flex: 1, overflow: 'scroll' }}>
+            <Routes>
+              <Route index element={<MapPage />} />
+              <Route path="/edit" element={<SearchEditPage />} />
+              <Route path="/edit/:elementType/:elementId" element={<EditNodePage />} />
+              <Route path="/review" element={<ReviewPage />} />
+              <Route path="/about" element={<AboutPage />} />
+            </Routes>
+          </Box>
+        </SnackbarProvider>
 
         <Divider />
 
