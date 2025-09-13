@@ -17,7 +17,7 @@ export default class MapPage extends React.Component<{}, State> {
 
   componentDidMount(): void {
     apiService.fetchLocations()
-      .then(locations => { this.setState({ locations, error: locations == null }) })
+      .then(locations => { this.setState({ locations, error: false }) })
       .catch(() => { this.setState({ locations: null, error: true })});
   }
 
