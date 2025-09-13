@@ -68,6 +68,11 @@ export default class EditNodeForm extends React.Component<Props, State> {
   }
 
   private renderSubmissionTypeSubForm(): React.ReactNode {
+    const onToggleChange = (_event: React.MouseEvent<HTMLElement, MouseEvent>, value: any) => {
+      if (value != null)
+        this.setState({ submissionMode: value });
+    }
+
     return (
       <React.Fragment>
         <FormLabel id="submission-type-label">Submission Type</FormLabel>
@@ -76,7 +81,7 @@ export default class EditNodeForm extends React.Component<Props, State> {
             color="primary"
             exclusive
             value={this.state.submissionMode}
-            onChange={(_event, value) => this.setState({ submissionMode: value })}>
+            onChange={onToggleChange}>
 
           <ToggleButton sx={{ flex: 1 }} value="login">
             Immediately Edit<br />(via OpenStreetMap Login)
