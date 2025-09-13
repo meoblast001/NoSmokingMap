@@ -159,13 +159,10 @@ export class ReviewPage extends React.Component<{}, State> {
     const approve = reviewStatus == 'accept';
     const snackbarMessage = approve ? "Successfully approved!" : "Successfully rejected!";
     apiService.reviewSuggestion(this.state.selectedSuggestion.id, approve, comment)
-      .then(success => {
-        if (success) {
-          this.updateSuggestionsList(this.state.currentPageIndex);
-          this.context.display({ message: snackbarMessage });
-          this.setState({ dialogOpen: null });
-        } else
-          throw 'failure';
+      .then(() => {
+        this.updateSuggestionsList(this.state.currentPageIndex);
+        this.context.display({ message: snackbarMessage });
+        this.setState({ dialogOpen: null });
       })
       .catch(() => this.setState({ currentPage: null, currentPageIndex: 0, error: 'review'}));
   }

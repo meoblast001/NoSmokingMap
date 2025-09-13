@@ -21,9 +21,8 @@ export class ApiError {
     this.code = apiErrorCode;
   }
 
-  public static async createFromResponse(response: Response): Promise<ApiError> {
+  public static createFromResponse(response: Response): ApiError {
     const statusCode = response.status;
-    const bodyText = await response.text();
 
     let code: ApiErrorCode;
     switch (statusCode) {
@@ -44,7 +43,7 @@ export class ApiError {
   }
 }
 
-async function httpGet<TOut>(uri: string, params: { [key: string]: string } | null,
+async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string]: string } | null,
     guard: (x: any) => x is TOut): Promise<TOut> {
   if (params) {
     const searchParams = new URLSearchParams();
@@ -62,7 +61,7 @@ async function httpGet<TOut>(uri: string, params: { [key: string]: string } | nu
   }
 
   if (!response.ok) {
-    throw await ApiError.createFromResponse(response);
+    throw ApiError.createFromResponse(response);
   }
 
   var result: any;
@@ -81,92 +80,67 @@ async function httpGet<TOut>(uri: string, params: { [key: string]: string } | nu
   return result;
 }
 
+async function httpPost(uri: string, formData: { [key: string]: any }): Promise<Response> {
+  var response: Response;
+  try {
+    response = await fetch(`/api/osm/update_smoking`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+  } catch (error) {
+    console.log(`Generic network error: ${error.message}`);
+    throw new ApiError(ApiErrorCode.NetworkError);
+  }
+
+  if (!response.ok) {
+    throw ApiError.createFromResponse(response);
+  }
+
+  return response;
+}
+
 export default class ApiService {
   fetchLocations(): Promise<LocationModel[]> {
-    return httpGet('/api/overpass/locations', null, (result) => isArrayOf(result, isLocationModel));
+    return httpGetWithJsonResponse('/api/overpass/locations', null, (result) => isArrayOf(result, isLocationModel));
   }
 
   async searchLocationsByTerms(searchTerms: string): Promise<LocationModel[]> {
-    return httpGet('/api/overpass/locations_by_terms', { searchTerms }, (result) => isArrayOf(result, isLocationModel));
+    return httpGetWithJsonResponse('/api/overpass/locations_by_terms', { searchTerms }, (result) => isArrayOf(result, isLocationModel));
   }
 
   async searchLocationsByGeoposition(lat: number, lon: number): Promise<LocationModel[]> {
     const params = { lat: lat.toString(), lon: lon.toString() };
-    return httpGet('/api/overpass/locations_by_geoposition', params, (result) => isArrayOf(result, isLocationModel));
+    return httpGetWithJsonResponse('/api/overpass/locations_by_geoposition', params, (result) => isArrayOf(result, isLocationModel));
   }
 
   async fetchLocationDetails(elementId: string, elementType: ElementType): Promise<LocationModel> {
     const params = { elementId, elementType };
-    return httpGet('/api/osm/element', params, isLocationModel);
+    return httpGetWithJsonResponse('/api/osm/element', params, isLocationModel);
   }
 
   async updateSmoking(elementId: string, elementType: ElementType, smokingStatus: SmokingStatus,
-    comment: string): Promise<boolean>
+    comment: string): Promise<undefined>
   {
-    try {
-      const formData = { elementId, elementType, smokingStatus, comment };
-      const response = await fetch(`/api/osm/update_smoking`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      if (!response.ok) {
-        console.error(`Response status: ${response.status}`);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error(`Error during fetch: ${error.message}`);
-      return false;
-    }
+    const formData = { elementId, elementType, smokingStatus, comment };
+    await httpPost('/api/osm/update_smoking', formData);
   }
 
   async listAllSuggestions(offset: number, limit: number): Promise<SuggestionsPaginationModel> {
     const params = { offset: offset.toString(), limit: limit.toString() };
-    return httpGet('/api/suggestion/list_all', params, isSuggestionsPaginationModel);
+    return httpGetWithJsonResponse('/api/suggestion/list_all', params, isSuggestionsPaginationModel);
   }
 
   async submitSuggestion(elementId: string, elementType: ElementType, smokingStatus: SmokingStatus,
-    comment: string): Promise<boolean>
+    comment: string): Promise<undefined>
   {
-    try {
-      const formData = { elementId, elementType, smokingStatus, comment };
-      const response = await fetch(`/api/suggestion/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      if (!response.ok) {
-        console.error(`Response status: ${response.status}`);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error(`Error during fetch: ${error.message}`);
-      return false;
-    }
+    const formData = { elementId, elementType, smokingStatus, comment };
+    await httpPost('/api/suggestion/submit', formData);
   }
 
-  async reviewSuggestion(suggestionId: number, approve: boolean, comment: string): Promise<boolean> {
-    try {
-      const formData = { suggestionId, approve, comment };
-      const response = await fetch(`/api/suggestion/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      if (!response.ok) {
-        console.error(`Response status: ${response.status}`);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error(`Error during fetch: ${error.message}`);
-      return false;
-    }
+  async reviewSuggestion(suggestionId: number, approve: boolean, comment: string): Promise<undefined> {
+    const formData = { suggestionId, approve, comment };
+    await httpPost('/api/suggestion/review', formData);
   }
 }
 

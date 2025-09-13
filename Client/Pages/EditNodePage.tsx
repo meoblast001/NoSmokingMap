@@ -75,22 +75,12 @@ class EditNodePageInternal extends React.Component<Props, State> {
     {
       case 'login':
         apiService.updateSmoking(this.elementId, this.elementType, formData.smokingType, formData.comment)
-          .then(success => {
-            if (success) {
-              this.onSubmissionSuccess();
-            } else
-              throw 'failure';
-          })
+          .then(() => this.onSubmissionSuccess())
           .catch(() => this.onSubmissionError());
         break;
       case 'anonymous':
         apiService.submitSuggestion(this.elementId, this.elementType, formData.smokingType, formData.comment)
-          .then(success => {
-            if (success) {
-              this.onSubmissionSuccess();
-            } else
-              throw 'failure';
-          })
+          .then(() => this.onSubmissionSuccess())
           .catch(() => this.onSubmissionError());
         break;
       default:
