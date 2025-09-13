@@ -83,7 +83,7 @@ async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string
 async function httpPost(uri: string, formData: { [key: string]: any }): Promise<Response> {
   var response: Response;
   try {
-    response = await fetch(`/api/osm/update_smoking`, {
+    response = await fetch(uri, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
