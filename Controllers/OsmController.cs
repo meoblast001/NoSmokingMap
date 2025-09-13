@@ -69,6 +69,7 @@ public class OsmController : Controller
 
     [Route("update_smoking")]
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateSmoking([FromBody] UpdateSmokingRequestParams model)
     {
         OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);

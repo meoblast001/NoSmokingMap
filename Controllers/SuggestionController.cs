@@ -77,6 +77,7 @@ public class SuggestionController : Controller
 
     [Route("submit")]
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit([FromBody] SubmitRequestParams requestParams)
     {
         if (!long.TryParse(requestParams.ElementId, out long elementIdNum))
@@ -110,6 +111,7 @@ public class SuggestionController : Controller
 
     [Route("review")]
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Review([FromBody] ReviewRequestParams requestParams)
     {
         OsmAccessToken? accessToken = OsmAuthService.GetAccessToken(Request.Cookies);

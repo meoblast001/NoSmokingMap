@@ -43,6 +43,8 @@ export class ApiError {
   }
 }
 
+const csrfToken = document.getElementById('csrf-token').innerHTML;
+
 async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string]: string } | null,
     guard: (x: any) => x is TOut): Promise<TOut> {
   if (params) {
@@ -85,7 +87,10 @@ async function httpPost(uri: string, formData: { [key: string]: any }): Promise<
   try {
     response = await fetch(uri, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
+      },
       body: JSON.stringify(formData)
     });
   } catch (error) {
