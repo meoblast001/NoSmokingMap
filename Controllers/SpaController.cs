@@ -16,6 +16,7 @@ public class SpaController : Controller
 
     public IActionResult Index()
     {
+        ViewBag.ApplicationTitle = mapSettings.ApplicationTitle;
         ViewBag.DefaultCoordinates = new float[] { mapSettings.Center.X, mapSettings.Center.Y };
         ViewBag.OsmRegistrationUri = osmSettings.RegistrationUri;
         return View();

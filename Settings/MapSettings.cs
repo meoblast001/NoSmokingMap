@@ -8,5 +8,6 @@ public class MapSettings
         public required float Y { get; set; }
     }
 
+    public required string ApplicationTitle { get; set; }
     public required Coordinates Center { get; set; }
 }
