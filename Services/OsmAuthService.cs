@@ -11,12 +11,14 @@ public class OsmAuthService : IDisposable
     private const string Scope = "read_prefs%20write_api";
 
     private readonly OAuthSettings oAuthSettings;
+    private readonly ILogger<OsmAuthService> logger;
     private readonly HttpClient oAuthHttpClient;
     private readonly UrlEncoder urlEncoder;
 
-    public OsmAuthService(OAuthSettings oAuthSettings)
+    public OsmAuthService(OAuthSettings oAuthSettings, ILogger<OsmAuthService> logger)
     {
         this.oAuthSettings = oAuthSettings;
+        this.logger = logger;
 
         oAuthHttpClient = new HttpClient()
         {
@@ -58,6 +60,7 @@ public class OsmAuthService : IDisposable
             return await response.Content.ReadAsStringAsync();
         }
 
+        logger.LogError("Access token request returned status code {StatusCode}", response.StatusCode);
         return null;
     }
 
