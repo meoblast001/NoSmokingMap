@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoSmokingMap.Models.Overpass;
 
 namespace NoSmokingMap.Models.Database;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IDataProtectionKeyContext
 {
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
     public DbSet<PointOfInterestEditSuggestionDbo> PoiEditSuggestions { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

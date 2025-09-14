@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NoSmokingMap.Models;
@@ -9,8 +10,6 @@ using NoSmokingMap.Settings;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews()
@@ -37,6 +36,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     dataSourceBuilder.ConfigureJsonOptions(jsonSerializerOptions);
     options.UseNpgsql(dataSourceBuilder.Build());
 });
+
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<ApplicationDbContext>()
+    .SetApplicationName("NoSmokingMap");
+
+builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 
 builder.Services.AddSingleton<OsmAuthService>();
 builder.Services.AddSingleton<OsmApiService>();
