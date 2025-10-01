@@ -3,14 +3,16 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
 import { Alert, Container, LinearProgress } from '@mui/material';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
+import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 
 interface State {
   locations: LocationModel[] | null;
   error: boolean;
 }
 
-export default class MapPage extends React.Component<{}, State> {
-  constructor(props: {}) {
+class MapPage extends React.Component<WithTranslation, State> {
+  constructor(props: WithTranslation) {
     super(props);
     this.state = { locations: null, error: false };
   }
@@ -48,15 +50,28 @@ export default class MapPage extends React.Component<{}, State> {
   }
 
   private getMarkers(): React.ReactNode[] {
+    const t = this.props.t;
     return this.state.locations.map(location => {
+      const smokingStatus = location.smoking !== null
+        ? (
+          <React.Fragment>
+            <br />
+            <Trans i18nKey="pages.map.smoking_label"
+                   values={{ status: t(smokingStatusTranslationKey(location.smoking)) }} />
+          </React.Fragment>
+        )
+        : null;
+
       return (
         <Marker position={[location.lat, location.lon]}>
           <Popup>
-            <b>{location.name}</b><br />
-            Smoking: {location.smoking}
+            <b>{location.name}</b>
+            {smokingStatus}
           </Popup>
         </Marker>
       )
     });
   }
 }
+
+export default withTranslation()(MapPage);

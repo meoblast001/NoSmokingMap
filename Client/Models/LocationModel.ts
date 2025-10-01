@@ -1,4 +1,5 @@
 import { ElementType } from "./ElementType";
+import { isSmokingStatus, SmokingStatus } from "./SmokingStatus";
 
 export default interface LocationModel {
   id: number;
@@ -6,7 +7,7 @@ export default interface LocationModel {
   type: ElementType;
   lat?: number;
   lon?: number;
-  smoking: string | null;
+  smoking: SmokingStatus | null;
 }
 
 export function isLocationModel(x: any): x is LocationModel {
@@ -15,5 +16,5 @@ export function isLocationModel(x: any): x is LocationModel {
     && (x.type == 'node' || x.type == 'way' || x.type == 'relation')
     && (typeof(x.lat) == 'number' || x.lat === null || x.lat === undefined)
     && (typeof(x.lon) == 'number' || x.lon === null || x.lon === undefined)
-    && (typeof(x.smoking) == 'string' || x.smoking === null);
+    && (isSmokingStatus(x.smoking) || x.smoking === null);
 }

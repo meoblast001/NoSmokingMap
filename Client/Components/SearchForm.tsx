@@ -31,18 +31,14 @@ class SearchForm extends React.Component<Params & WithTranslation> {
               endIcon={<SearchIcon />}
               onClick={() => this.onSearch()}
               disabled={this.props.blockingInput}>
-            <Trans i18nKey="components.search_form.search_button">
-              Search
-            </Trans>
+            <Trans i18nKey="components.search_form.search_button" />
           </Button>
         </Box>
         <Button variant="outlined"
             endIcon={<LocationSearchingIcon />}
             onClick={() => this.onShowNearbyLocations()}
             disabled={this.props.blockingInput}>
-          <Trans i18nKey="components.search_form.show_nearby_locations">
-            Show Nearby Locations
-          </Trans>
+          <Trans i18nKey="components.search_form.show_nearby_locations" />
         </Button>
       </Box>
     );

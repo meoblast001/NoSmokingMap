@@ -9,6 +9,19 @@ const locale: ResourceLanguage = {
       login: "Einloggen",
       about: "Über"
     },
+    smoking_status: {
+      no: "Rauchen nirgendwo erlaubt",
+      yes: "Überall erlaubt",
+      dedicated: "Speziell für Raucher vorgesehen (z.B. Raucherclub)",
+      separated: "In nicht abgegrenzten Raucherbereichen",
+      isolated: "In abgegrenzten Raucherbereichen",
+      outside: "Draußen erlaubt"
+    },
+    pages: {
+      map: {
+        smoking_label: "Rauchen: {{status}}"
+      }
+    },
     components: {
       search_form: {
         search_terms: "Suchbegriffe",

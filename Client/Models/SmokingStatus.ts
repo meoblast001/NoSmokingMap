@@ -4,3 +4,7 @@ export type SmokingStatus = typeof SmokingStatusValues[number];
 export function isSmokingStatus(x: any): x is SmokingStatus {
   return SmokingStatusValues.includes(x);
 }
+
+export function smokingStatusTranslationKey(smokingStatus: SmokingStatus) {
+  return `smoking_status.${smokingStatus}`;
+}

@@ -13,10 +13,11 @@ import {
   Typography
 } from '@mui/material';
 import * as React from 'react';
-import { SmokingStatus } from '../Models/SmokingStatus';
+import { SmokingStatus, smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import { osmAuthService } from '../OsmAuthService';
 import LoginIcon from '@mui/icons-material/Login';
 import { getOsmRegistrationUri } from '../ApiService';
+import { WithTranslation, withTranslation } from 'react-i18next';
 
 export interface FormData {
   submissionMode: 'login' | 'anonymous';
@@ -34,11 +35,11 @@ interface State {
   formErrors: { submissionMode?: boolean, smokingType?: boolean}
 }
 
-export default class EditNodeForm extends React.Component<Props, State> {
+class EditNodeForm extends React.Component<Props & WithTranslation, State> {
   private smokingType: SmokingStatus | null;
   private comment: string = "";
 
-  constructor(props: Props) {
+  constructor(props: Props & WithTranslation) {
     super(props);
     this.state = { submissionMode: 'login', formErrors: {} };
   }
@@ -96,18 +97,19 @@ export default class EditNodeForm extends React.Component<Props, State> {
   }
 
   private renderModificationsSubForm(): React.ReactNode {
+    const t = this.props.t;
     return (
       <React.Fragment>
         <FormLabel id="smoking-type-label">Smoking</FormLabel>
         <Select aria-labelledby="smoking-type-label"
             onChange={event => this.smokingType = event.target.value as any}
             error={this.state.formErrors.smokingType}>
-          <MenuItem value="no">No smoking anywhere</MenuItem>
-          <MenuItem value="yes">Allowed everywhere</MenuItem>
-          <MenuItem value="dedicated">Dedicated to smokers (e.g. smokers' club)</MenuItem>
-          <MenuItem value="separated">In non-isolated smoking areas</MenuItem>
-          <MenuItem value="isolated">In isolated smoking areas</MenuItem>
-          <MenuItem value="outside">Allowed outside</MenuItem>
+          <MenuItem value="no">{t(smokingStatusTranslationKey('no'))}</MenuItem>
+          <MenuItem value="yes">{t(smokingStatusTranslationKey('yes'))}</MenuItem>
+          <MenuItem value="dedicated">{t(smokingStatusTranslationKey('dedicated'))}</MenuItem>
+          <MenuItem value="separated">{t(smokingStatusTranslationKey('separated'))}</MenuItem>
+          <MenuItem value="isolated">{t(smokingStatusTranslationKey('isolated'))}</MenuItem>
+          <MenuItem value="outside">{t(smokingStatusTranslationKey('outside'))}</MenuItem>
         </Select>
 
         <FormLabel id="comment-label">Comment</FormLabel>
@@ -165,3 +167,5 @@ export default class EditNodeForm extends React.Component<Props, State> {
     this.props.onSubmit(formData);
   }
 }
+
+export default withTranslation()(EditNodeForm);
