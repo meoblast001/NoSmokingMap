@@ -1,5 +1,6 @@
 import { Box, Button, TextField } from '@mui/material';
 import * as React from 'react';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
@@ -9,18 +10,19 @@ interface Params {
   onShowNearbyLocations: () => void
 }
 
-export default class SearchForm extends React.Component<Params> {
+class SearchForm extends React.Component<Params & WithTranslation> {
   private searchTerm: string = '';
 
-  constructor(params: Params) {
+  constructor(params: Params & WithTranslation) {
     super(params);
   }
 
   render(): React.ReactNode {
+    const t = this.props.t;
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-          <TextField label="Search Term"
+          <TextField label={t('components.search_form.search_terms')}
               variant="outlined"
               onChange={(event) => this.onSearchTermChanged(event)}
               disabled={this.props.blockingInput}
@@ -29,14 +31,18 @@ export default class SearchForm extends React.Component<Params> {
               endIcon={<SearchIcon />}
               onClick={() => this.onSearch()}
               disabled={this.props.blockingInput}>
-            Search
+            <Trans i18nKey="components.search_form.search_button">
+              Search
+            </Trans>
           </Button>
         </Box>
         <Button variant="outlined"
             endIcon={<LocationSearchingIcon />}
             onClick={() => this.onShowNearbyLocations()}
             disabled={this.props.blockingInput}>
-          Show Nearby Locations
+          <Trans i18nKey="components.search_form.show_nearby_locations">
+            Show Nearby Locations
+          </Trans>
         </Button>
       </Box>
     );
@@ -54,3 +60,5 @@ export default class SearchForm extends React.Component<Params> {
     this.props.onShowNearbyLocations();
   }
 }
+
+export default withTranslation()(SearchForm);

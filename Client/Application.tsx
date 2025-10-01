@@ -7,6 +7,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import LoginIcon from '@mui/icons-material/Login';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import { useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { osmAuthService } from './OsmAuthService';
 import MapPage from './Pages/MapPage';
 import SearchEditPage from './Pages/SearchEditPage';
@@ -18,6 +19,7 @@ import SnackbarProvider from './Components/SnackbarProvider';
 function AppRoot(): React.ReactNode {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const theme = createTheme({ typography: { fontFamily: `'Roboto', 'Helvetica', 'Arial', sans-serif` } });
 
   function executeNavigate(path: string) {
@@ -45,10 +47,10 @@ function AppRoot(): React.ReactNode {
         <Divider />
 
         <BottomNavigation showLabels value={location.pathname} onChange={(_event, value) => executeNavigate(value)}>
-          <BottomNavigationAction label="Map" icon={<MapIcon />} value="/" />
-          <BottomNavigationAction label="Modify" icon={<EditIcon />} value="/edit" />
+          <BottomNavigationAction label={t('navigation.map')} icon={<MapIcon />} value="/" />
+          <BottomNavigationAction label={t('navigation.edit')} icon={<EditIcon />} value="/edit" />
           {LoginOrContributeNavigationAction()}
-          <BottomNavigationAction label="About" icon={<InfoIcon />} value="/about" />
+          <BottomNavigationAction label={t('navigation.about')} icon={<InfoIcon />} value="/about" />
         </BottomNavigation>
       </Box>
     </ThemeProvider>
@@ -56,10 +58,11 @@ function AppRoot(): React.ReactNode {
 }
 
 function LoginOrContributeNavigationAction(): React.ReactNode {
+  const { t } = useTranslation();
   if (osmAuthService.isLoggedIn()) {
-    return <BottomNavigationAction label="Review" icon={<ChecklistIcon />} value="/review" />;
+    return <BottomNavigationAction label={t('navigation.review')} icon={<ChecklistIcon />} value="/review" />;
   } else {
-    return <BottomNavigationAction label="Login" icon={<LoginIcon />} value=":/osm_auth/login" />;
+    return <BottomNavigationAction label={t('navigation.login')} icon={<LoginIcon />} value=":/osm_auth/login" />;
   }
 }
 
