@@ -31,6 +31,7 @@ const locale: ResourceLanguage = {
         error: "Failed to get location details."
       },
       review: {
+        noResults: "There are currently no suggestions to review.",
         errorList: "Failed to get list of change suggestoins.",
         errorSubmit: "Failed to submit review.",
         errorDisplay: "Failed to display suggestions to review."

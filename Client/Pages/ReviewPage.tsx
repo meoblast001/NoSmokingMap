@@ -62,7 +62,6 @@ export class ReviewPage extends React.Component<{}, State> {
       return (
         <Container sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
           {this.renderSuggestions()} 
-          <Pagination count={this.totalPages} page={this.state.currentPageIndex + 1} onChange={this.onPageChange} />
           {this.renderConfirmationDialog('accept')}
           {this.renderConfirmationDialog('reject')}
         </Container>
@@ -100,11 +99,25 @@ export class ReviewPage extends React.Component<{}, State> {
                           onApprove={() => this.onSubmitReview('accept', suggestion)}
                           onReject={() => this.onSubmitReview('reject', suggestion)} />
         ));
-      return (
-        <List>
-          {suggestionCards}
-        </List>
-      )
+      if (suggestionCards.length > 0) {
+        return (
+          <React.Fragment>
+            <List>
+              {suggestionCards}
+            </List>
+
+            <Pagination count={this.totalPages} page={this.state.currentPageIndex + 1} onChange={this.onPageChange} />
+          </React.Fragment>
+        );
+      } else {
+        return (
+          <Container sx={{ p: 2 }}>
+            <Alert severity="info">
+              <Trans i18nKey="pages.review.noResults" />
+            </Alert>
+          </Container>
+        );
+      }
     } else {
       return (
         <Container sx={{ p: 2 }}>

@@ -31,6 +31,7 @@ const locale: ResourceLanguage = {
         error: "Beim Abrufen der Details über das Lokal ist ein Fehler aufgetreten."
       },
       review: {
+        noResults: "Es gibt aktuell keine zu bewertenden Vorschläge.",
         errorList: "Beim Abrufen der Änderungsvorschläge ist ein Fehler aufgetreten.",
         errorSubmit: "Bei der Übermittlung der Bewertung ist ein Fehler aufgetreten.",
         errorDisplay: "Beim Anzeigen der zu bewertenden Vorschläge ist ein Fehler aufgetreten."
