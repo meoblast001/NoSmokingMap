@@ -20,6 +20,12 @@ const locale: ResourceLanguage = {
     pages: {
       map: {
         smoking_label: "Smoking: {{status}}"
+      },
+      about: {
+        info:
+          "<sourceLink>Source code on GitHub</sourceLink>.<br />"
+          + "Licensed under <licenseLink>MIT license</licenseLink>.<br />"
+          + "Developed using data from <osmLink>OpenStreetMap</osmLink>."
       }
     },
     components: {
