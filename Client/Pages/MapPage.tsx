@@ -24,12 +24,15 @@ class MapPage extends React.Component<WithTranslation, State> {
   }
 
   render(): React.ReactNode {
+    const t = this.props.t;
     const defaultCoordinates: [number, number] = JSON.parse(document.getElementById('default-coordinates').innerHTML);
+    const attributionLink = "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a>";
     if (this.state.locations) {
       return (
         <div style={{ width: '100%', height: '100%' }}>
           <MapContainer center={defaultCoordinates} zoom={11}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></TileLayer>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                       attribution={t('pages.map.attribution', { link: attributionLink })} />
             {this.getMarkers()}
           </MapContainer>
         </div>

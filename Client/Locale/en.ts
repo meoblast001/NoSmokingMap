@@ -19,6 +19,7 @@ const locale: ResourceLanguage = {
     },
     pages: {
       map: {
+        attribution: "&copy; {{link}} contributors",
         smoking_label: "Smoking: {{status}}"
       },
       about: {
