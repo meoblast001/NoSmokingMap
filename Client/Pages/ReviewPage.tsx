@@ -18,6 +18,7 @@ import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
 import SuggestionCard from "../Components/SuggestionCard";
 import SuggestionModel from "../Models/SuggestionModel";
 import { SnackbarContext } from "../SnackbarContext";
+import { Trans } from "react-i18next";
 
 const EntriesPerPage: number = 25;
 
@@ -69,13 +70,17 @@ export class ReviewPage extends React.Component<{}, State> {
     } else if (this.state.error == 'list') {
       return (
         <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to get list of contributions.</Alert>
+          <Alert severity='error'>
+            <Trans i18nKey="pages.review.errorList" />
+          </Alert>
         </Container>
       );
     } else if (this.state.error == 'review') {
       return (
         <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to submit review.</Alert>
+          <Alert severity='error'>
+            <Trans i18nKey="pages.review.errorSubmit" />
+          </Alert>
         </Container>
       );
     } else {
@@ -103,7 +108,9 @@ export class ReviewPage extends React.Component<{}, State> {
     } else {
       return (
         <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to display suggestions to review.</Alert>
+          <Alert severity='error'>
+            <Trans i18nKey="pages.review.errorDisplay" />
+          </Alert>
         </Container>
       );
     }

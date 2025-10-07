@@ -40,7 +40,9 @@ class MapPage extends React.Component<WithTranslation, State> {
     } else if (this.state.error) {
       return (
         <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to get locations.</Alert>
+          <Alert severity='error'>
+            <Trans i18nKey="pages.map.error" />
+          </Alert>
         </Container>
       );
     } else {

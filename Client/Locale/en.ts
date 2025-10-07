@@ -20,7 +20,20 @@ const locale: ResourceLanguage = {
     pages: {
       map: {
         attribution: "&copy; {{link}} contributors",
+        error: "Failed to get locations.",
         smoking_label: "Smoking: {{status}}"
+      },
+      searchEdit: {
+        errorSearch: "Failed to search.",
+        errorGeolocation: "Failed to get locations."
+      },
+      editNode: {
+        error: "Failed to get location details."
+      },
+      review: {
+        errorList: "Failed to get list of change suggestoins.",
+        errorSubmit: "Failed to submit review.",
+        errorDisplay: "Failed to display suggestions to review."
       },
       about: {
         info:

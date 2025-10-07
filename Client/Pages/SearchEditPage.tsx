@@ -6,6 +6,7 @@ import { apiService } from "../ApiService";
 import LocationModel from "../Models/LocationModel";
 import AmenityCard from "../Components/AmenityCard";
 import { NavigateFunction, useNavigate } from "react-router";
+import { Trans } from "react-i18next";
 
 interface Props {
   navigate: NavigateFunction;
@@ -13,14 +14,14 @@ interface Props {
 
 interface State {
   searching: boolean;
-  geolocationFailure: boolean;
-  results: LocationModel[] | null;
+  error: 'search' | 'geolocation' | null;
+  results: LocationModel[];
 }
 
 export class SearchEditPageInternal extends React.Component<Props, State> {
   constructor(params: Props) {
     super(params);
-    this.state = { searching: false, geolocationFailure: false, results: [] };
+    this.state = { searching: false, error: null, results: [] };
   }
 
   render(): React.ReactNode {
@@ -45,19 +46,30 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
   }
 
   private renderGeolocationFailure(): React.ReactNode {
-    if (this.state.geolocationFailure) {
-      return (
-        <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to get locations.</Alert>
-        </Container>
-      );
+    switch (this.state.error) {
+      case 'search':
+        return (
+          <Container sx={{ p: 2 }}>
+            <Alert severity='error'>
+              <Trans i18nKey="pages.searchEdit.errorSearch" />
+            </Alert>
+          </Container>
+        );
+      case 'geolocation':
+        return (
+          <Container sx={{ p: 2 }}>
+            <Alert severity='error'>
+              <Trans i18nKey="pages.searchEdit.errorGeolocation" />
+            </Alert>
+          </Container>
+        );
+      default:
+        return null;
     }
-    else
-      return null;
   }
 
   private renderResults(): React.ReactNode {
-    if (this.state.results != null)
+    if (this.state.error == null)
     {
       const resultCards = this.state.results
         .map(result => (
@@ -69,14 +81,6 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
         </List>
       );
     }
-    else
-    {
-      return (
-        <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to search.</Alert>
-        </Container>
-      );
-    }
   }
 
   private onAmenityClicked(locationModel: LocationModel) {
@@ -84,14 +88,19 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
   }
 
   private async onSearch(searchTerm: string) {
-    this.setState({ searching: true, geolocationFailure: false });
-    const results = await apiService.searchLocationsByTerms(searchTerm);
-    this.setState({ searching: false, geolocationFailure: false, results });
+    try {
+      this.setState({ searching: true, error: null });
+      const results = await apiService.searchLocationsByTerms(searchTerm);
+      this.setState({ searching: false, error: null, results });
+    } catch (error) {
+      console.debug("Failed to search", error);
+      this.setState({ searching: false, error: 'search', results: []});
+    }
   }
 
   private async onShowNearbyLocations() {
     try {
-      this.setState({ searching: true, geolocationFailure: false });
+      this.setState({ searching: true, error: null });
       const position = await getCurrentPosition({
         timeout: 15000 /* 15s */,
         enableHighAccuracy: false,
@@ -99,10 +108,10 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
       });
       const results = await apiService.searchLocationsByGeoposition(position.coords.latitude,
         position.coords.longitude);
-      this.setState({ searching: false, geolocationFailure: false, results });
+      this.setState({ searching: false, error: null, results });
     } catch (error) {
       console.debug("Failure to search by geolocation", error);
-      this.setState({ searching: false, geolocationFailure: true });
+      this.setState({ searching: false, error: 'geolocation', results: [] });
     }
   }
 }

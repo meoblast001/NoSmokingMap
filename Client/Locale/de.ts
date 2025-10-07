@@ -20,7 +20,20 @@ const locale: ResourceLanguage = {
     pages: {
       map: {
         attribution: "&copy; {{link}}-Beitragende",
+        error: "Beim Abrufen der Lokale ist ein Fehler aufgetreten.",
         smoking_label: "Rauchen: {{status}}"
+      },
+      searchEdit: {
+        errorSearch: "Beim Suchen ist ein Fehler aufgetreten.",
+        errorGeolocation: "Beim Abrufen der Lokale ist ein Fehler aufgetreten."
+      },
+      editNode: {
+        error: "Beim Abrufen der Details über das Lokal ist ein Fehler aufgetreten."
+      },
+      review: {
+        errorList: "Beim Abrufen der Änderungsvorschläge ist ein Fehler aufgetreten.",
+        errorSubmit: "Bei der Übermittlung der Bewertung ist ein Fehler aufgetreten.",
+        errorDisplay: "Beim Anzeigen der zu bewertenden Vorschläge ist ein Fehler aufgetreten."
       },
       about: {
         info:

@@ -7,6 +7,7 @@ import LocationModel from '../Models/LocationModel';
 import EditNodeForm from '../Components/EditNodeForm';
 import { FormData as EditNodeFormData } from '../Components/EditNodeForm';
 import { SnackbarContext } from '../SnackbarContext';
+import { Trans } from 'react-i18next';
 
 interface Props {
   params: Params<string>
@@ -58,7 +59,9 @@ class EditNodePageInternal extends React.Component<Props, State> {
     } else if (this.state.error) {
       return (
         <Container sx={{ p: 2 }}>
-          <Alert severity='error'>Failed to get location details.</Alert>
+          <Alert severity='error'>
+            <Trans i18nKey="pages.editNode.error" />
+          </Alert>
         </Container>
       );
     } else {
