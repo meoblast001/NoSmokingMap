@@ -14,6 +14,8 @@ interface Props {
 
 export class SuggestionCard extends React.Component<Props & WithTranslation> {
   render(): React.ReactNode {
+    const t = this.props.t;
+
     const currentSmoking = this.props.suggestion.location.smoking;
     const newSmoking = this.props.suggestion.newSmoking;
     return (
@@ -27,11 +29,11 @@ export class SuggestionCard extends React.Component<Props & WithTranslation> {
                 </span>
                 <div style={{ paddingLeft: 5 }}>
                   <Trans i18nKey="components.suggestion_card.current_smoking_label"
-                         values={{ status: smokingStatusTranslationKey(currentSmoking) }}
+                         values={{ status: t(smokingStatusTranslationKey(currentSmoking)) }}
                          components={{ bold: <b /> }} />
                   <br />
                   <Trans i18nKey="components.suggestion_card.new_smoking_label"
-                         values={{ status: smokingStatusTranslationKey(newSmoking) }}
+                         values={{ status: t(smokingStatusTranslationKey(newSmoking)) }}
                          components={{ bold: <b /> }} />
                   <br />
                   <Trans i18nKey="components.suggestion_card.comment_label"

@@ -13,12 +13,12 @@ import {
   TextField
 } from "@mui/material";
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import { apiService } from "../ApiService";
 import SuggestionsPaginationModel from "../Models/SuggestionsPaginationModel";
 import SuggestionCard from "../Components/SuggestionCard";
 import SuggestionModel from "../Models/SuggestionModel";
 import { SnackbarContext } from "../SnackbarContext";
-import { Trans } from "react-i18next";
 
 const EntriesPerPage: number = 25;
 
@@ -33,11 +33,11 @@ interface State {
   modifiedComment: string;
 }
 
-export class ReviewPage extends React.Component<{}, State> {
+class ReviewPage extends React.Component<WithTranslation, State> {
   static contextType = SnackbarContext;
   declare context: React.ContextType<typeof SnackbarContext>;
 
-  constructor(props: {}) {
+  constructor(props: WithTranslation) {
     super(props);
     this.state = {
       currentPageIndex: 0,
@@ -70,7 +70,7 @@ export class ReviewPage extends React.Component<{}, State> {
       return (
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>
-            <Trans i18nKey="pages.review.errorList" />
+            <Trans i18nKey="pages.review.error_list" />
           </Alert>
         </Container>
       );
@@ -78,7 +78,7 @@ export class ReviewPage extends React.Component<{}, State> {
       return (
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>
-            <Trans i18nKey="pages.review.errorSubmit" />
+            <Trans i18nKey="pages.review.error_submit" />
           </Alert>
         </Container>
       );
@@ -113,7 +113,7 @@ export class ReviewPage extends React.Component<{}, State> {
         return (
           <Container sx={{ p: 2 }}>
             <Alert severity="info">
-              <Trans i18nKey="pages.review.noResults" />
+              <Trans i18nKey="pages.review.no_results" />
             </Alert>
           </Container>
         );
@@ -122,7 +122,7 @@ export class ReviewPage extends React.Component<{}, State> {
       return (
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>
-            <Trans i18nKey="pages.review.errorDisplay" />
+            <Trans i18nKey="pages.review.error_display" />
           </Alert>
         </Container>
       );
@@ -138,37 +138,43 @@ export class ReviewPage extends React.Component<{}, State> {
   }
 
   private renderConfirmationDialog(reviewStatus: ReviewStatus): React.ReactNode {
+    const t = this.props.t;
+
     const initialComment = this.state.selectedSuggestion != null ? this.state.selectedSuggestion.comment : "";
 
     let contentText: React.ReactNode;
     let form: React.ReactNode = null;
     switch (reviewStatus) {
       case 'accept':
-        contentText = (<span>Are you sure you would like to approve these changes?</span>);
+        contentText = (<span><Trans i18nKey="pages.review.confirm_approve" /></span>);
         form = (
           <Container>
-            <TextField label="Comment About Changes" multiline rows={2} defaultValue={initialComment}
-                      onChange={event => this.setState({ modifiedComment: event.target.value })}
-                      sx={{ width: '100%', marginTop: 2 }}/>
+            <TextField label={t('pages.review.comment_label')} multiline rows={2} defaultValue={initialComment}
+                       onChange={event => this.setState({ modifiedComment: event.target.value })}
+                       sx={{ width: '100%', marginTop: 2 }}/>
           </Container>
         );
         break;
       case 'reject':
-        contentText = (<span>Are you sure you would like to reject these changes?</span>);
+        contentText = (<span><Trans i18nKey="pages.review.confirm_reject" /></span>);
         break;
     }
 
     return (
       <Dialog open={this.state.dialogOpen == reviewStatus} onClose={() => this.onCancel()}>
         <DialogTitle>
-          Confirmation
+          <Trans i18nKey="pages.review.confirmation_dialog_title" />
         </DialogTitle>
         <DialogContent>
           <DialogContentText>{contentText}</DialogContentText>
           {form}
           <DialogActions>
-            <Button onClick={() => this.onConfirmation(reviewStatus, this.state.modifiedComment)}>Yes</Button>
-            <Button onClick={() => this.onCancel()}>No</Button>
+            <Button onClick={() => this.onConfirmation(reviewStatus, this.state.modifiedComment)}>
+              <Trans i18nKey="yes" />
+            </Button>
+            <Button onClick={() => this.onCancel()}>
+              <Trans i18nKey="no" />
+            </Button>
           </DialogActions>
         </DialogContent>
       </Dialog>
@@ -176,8 +182,10 @@ export class ReviewPage extends React.Component<{}, State> {
   }
 
   private onConfirmation(reviewStatus: ReviewStatus, comment: string) {
+    const t = this.props.t;
+
     const approve = reviewStatus == 'accept';
-    const snackbarMessage = approve ? "Successfully approved!" : "Successfully rejected!";
+    const snackbarMessage = approve ? t('pages.review.approved') : t('pages.review.rejected');
     apiService.reviewSuggestion(this.state.selectedSuggestion.id, approve, comment)
       .then(() => {
         this.updateSuggestionsList(this.state.currentPageIndex);
@@ -202,3 +210,5 @@ export class ReviewPage extends React.Component<{}, State> {
     this.updateSuggestionsList(page - 1);
   }
 }
+
+export default withTranslation()(ReviewPage);

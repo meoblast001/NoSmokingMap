@@ -2,6 +2,8 @@ import { ResourceLanguage } from "i18next";
 
 const locale: ResourceLanguage = {
   translation: {
+    yes: "Yes",
+    no: "No",
     navigation: {
       map: "Map",
       edit: "Modify",
@@ -32,10 +34,16 @@ const locale: ResourceLanguage = {
         error: "Failed to get location details."
       },
       review: {
-        noResults: "There are currently no suggestions to review.",
-        errorList: "Failed to get list of change suggestoins.",
-        errorSubmit: "Failed to submit review.",
-        errorDisplay: "Failed to display suggestions to review."
+        no_results: "There are currently no suggestions to review.",
+        error_list: "Failed to get list of change suggestoins.",
+        error_submit: "Failed to submit review.",
+        error_display: "Failed to display suggestions to review.",
+        confirmation_dialog_title: "Confirmation",
+        confirm_approve: "Are you sure you would like to approve these changes?",
+        confirm_reject: "Are you sure you would like to reject these changes?",
+        comment_label: "Comment About Changes",
+        approved: "Successfully approved!",
+        rejected: "Successfully rejected!"
       },
       about: {
         app_version: "Application Version: {{version}}",

@@ -13,7 +13,7 @@ import MapPage from './Pages/MapPage';
 import SearchEditPage from './Pages/SearchEditPage';
 import { AboutPage } from './Pages/AboutPage';
 import EditNodePage from './Pages/EditNodePage';
-import { ReviewPage } from './Pages/ReviewPage';
+import ReviewPage from './Pages/ReviewPage';
 import SnackbarProvider from './Components/SnackbarProvider';
 
 function AppRoot(): React.ReactNode {
