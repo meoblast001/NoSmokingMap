@@ -67,8 +67,9 @@ app.MapStaticAssets();
 
 app.MapControllers();
 app.MapControllerRoute(name: "spa-index", pattern: "", defaults: new { controller = "Spa", action = "Index" });
+app.MapControllerRoute(name: "application", "application/{action=Index}", defaults: new { controller = "Application" });
 app.MapControllerRoute(name: "spa-catch-all",
-    pattern: "{*path:regex(^(?!api/).+$)}",
+    pattern: "{*path:regex(^(?!api/|application/).+$)}",
     defaults: new { controller = "Spa", action = "Index" });
 
 var endpointDataSource = app.Services.GetRequiredService<EndpointDataSource>();
