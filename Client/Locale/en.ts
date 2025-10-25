@@ -38,6 +38,7 @@ const locale: ResourceLanguage = {
         errorDisplay: "Failed to display suggestions to review."
       },
       about: {
+        app_version: "Application Version: {{version}}",
         info:
           "<sourceLink>Source code on GitHub</sourceLink>.<br />"
           + "Licensed under <licenseLink>MIT license</licenseLink>.<br />"

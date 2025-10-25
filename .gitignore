@@ -4,6 +4,7 @@
 
 appsettings.json
 appsettings.Development.json
+version.txt
 
 ## A streamlined .gitignore for modern .NET projects
 ## including temporary files, build results, and

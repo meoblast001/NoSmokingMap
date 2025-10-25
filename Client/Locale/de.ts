@@ -38,6 +38,7 @@ const locale: ResourceLanguage = {
         errorDisplay: "Beim Anzeigen der zu bewertenden Vorschläge ist ein Fehler aufgetreten."
       },
       about: {
+        app_version: "Applikationsversion: {{version}}",
         info:
           "<sourceLink>Quelltext auf GitHub</sourceLink>.<br />"
           + "Lizenziert unter <licenseLink>MIT-Lizenz</licenseLink>.<br />"

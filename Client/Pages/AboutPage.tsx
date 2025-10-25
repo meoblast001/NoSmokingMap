@@ -1,12 +1,15 @@
 import { Container, Typography } from '@mui/material';
 import * as React from 'react';
 import { Trans } from 'react-i18next';
+import version from '../version';
 
 export class AboutPage extends React.Component {
   render(): React.ReactNode {
     return (
       <Container sx={{ p: 2, textAlign: 'center' }}>
         <Typography>
+            <Trans i18nKey="pages.about.app_version" values={{ version }} /><br /><br />
+
             &copy; 2025 <a href="http://braden-walters.info" target="_blank">Braden Walters</a> <br /><br />
 
             <Trans i18nKey="pages.about.info"

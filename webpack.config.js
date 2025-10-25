@@ -43,10 +43,14 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.txt$/i,
+        use: 'raw-loader',
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js', '.tsx']
+    extensions: ['.ts', '.js', '.tsx', '.txt']
   }
 };
