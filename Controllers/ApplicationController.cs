@@ -63,6 +63,12 @@ public class ApplicationController : Controller
             Icons = [
                 new ManifestIconData()
                 {
+                    Src = "/favicon-192x192.png",
+                    Sizes = "192x192",
+                    Type = "image/png"
+                },
+                new ManifestIconData()
+                {
                     Src = "/favicon-96x96.png",
                     Sizes = "96x96",
                     Type = "image/png"
