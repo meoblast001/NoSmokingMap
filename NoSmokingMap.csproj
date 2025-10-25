@@ -25,6 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <UpToDateCheckInput Include="Client/**/*.ts" />
+    <UpToDateCheckInput Include="Client/**/*.tsx" />
+    <UpToDateCheckInput Include="Client/**/*.js" />
+    <UpToDateCheckInput Include="Client/**/*.jsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,5 +40,21 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="OsmSharp" Version="6.2.0" />
   </ItemGroup>
+
+  <Target Name="ClientBuild"
+      BeforeTargets="PrepareForBuild"
+      Inputs="@(UpToDateCheckInput)"
+      Outputs="wwwroot/dist/main.build.js">
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm run build-dev" ContinueOnError="false" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm run build" ContinueOnError="false" />
+  </Target>
+
+  <Target Name="ClientClean" AfterTargets="CoreClean">
+    <ItemGroup>
+      <_DistFiles Include="wwwroot/dist/**" />
+    </ItemGroup>
+
+    <Delete Files="@(_DistFiles)" />
+  </Target>
 
 </Project>
