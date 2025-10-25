@@ -26,12 +26,15 @@ const locale: ResourceLanguage = {
         error: "Beim Abrufen der Lokale ist ein Fehler aufgetreten.",
         smoking_label: "Rauchstatus: {{status}}"
       },
-      searchEdit: {
-        errorSearch: "Beim Suchen ist ein Fehler aufgetreten.",
-        errorGeolocation: "Beim Abrufen der Lokale ist ein Fehler aufgetreten."
+      search_edit: {
+        name_label: "<bold>Name:</bold> {{name}}",
+        error_search: "Beim Suchen ist ein Fehler aufgetreten.",
+        error_geolocation: "Beim Abrufen der Lokale ist ein Fehler aufgetreten."
       },
-      editNode: {
-        error: "Beim Abrufen der Details über das Lokal ist ein Fehler aufgetreten."
+      edit_node: {
+        error: "Beim Abrufen der Details über das Lokal ist ein Fehler aufgetreten.",
+        submit_success: "Bewertung erfolgreich übermittelt!",
+        submit_error: "Während der Übermittlung ist ein Fehler aufgetreten. Bitte nochmal versuchen."
       },
       review: {
         no_results: "Es gibt aktuell keine zu bewertenden Vorschläge.",
@@ -61,6 +64,22 @@ const locale: ResourceLanguage = {
       },
       amenity_card: {
         smoking_label: "<bold>Rauchstatus:</bold> {{status}}"
+      },
+      edit_node_form: {
+        submission_type_label: "Übermittlungsmethode",
+        login_mode_button: "Sofort bearbeiten<br>(über OpenStreetMap einloggen)",
+        anonymous_mode_button: "Anonym vorschlagen<br>(ohne Account)",
+        smoking_label: "Raucherstatus",
+        comment_label: "Kommentar",
+        comment_caption: "Wie hast Du den Raucherstatus dieses Lokals festgestellt? Halte den Text bitte kurz und "
+          + "klar. Der könnte in OpenStreetMap aufgenommen werden.",
+        comment_placeholder: "Kommentar hier schreiben",
+        osm_login_button: "Über OpenStreetMap einloggen",
+        osm_login_note: "Hast Du keinen OpenStreetMap-Account? Du kannst dich "
+          + "<registerLink>hier registrieren</registerLink> oder die Übermittlungsmethode auf \"Anonym vorschlagen\" "
+          + "umstellen.",
+        submit_button: "Übermitteln",
+        back_button: "Zurück"
       },
       suggestion_card: {
         current_smoking_label: "<bold>Bisheriger Rauchstatus:</bold> {{status}}",

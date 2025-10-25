@@ -51,7 +51,7 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
         return (
           <Container sx={{ p: 2 }}>
             <Alert severity='error'>
-              <Trans i18nKey="pages.searchEdit.errorSearch" />
+              <Trans i18nKey="pages.search_edit.error_search" />
             </Alert>
           </Container>
         );
@@ -59,7 +59,7 @@ export class SearchEditPageInternal extends React.Component<Props, State> {
         return (
           <Container sx={{ p: 2 }}>
             <Alert severity='error'>
-              <Trans i18nKey="pages.searchEdit.errorGeolocation" />
+              <Trans i18nKey="pages.search_edit.error_geolocation" />
             </Alert>
           </Container>
         );

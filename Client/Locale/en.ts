@@ -26,12 +26,15 @@ const locale: ResourceLanguage = {
         error: "Failed to get locations.",
         smoking_label: "Smoking: {{status}}"
       },
-      searchEdit: {
-        errorSearch: "Failed to search.",
-        errorGeolocation: "Failed to get locations."
+      search_edit: {
+        error_search: "Failed to search.",
+        error_geolocation: "Failed to get locations."
       },
-      editNode: {
-        error: "Failed to get location details."
+      edit_node: {
+        name_label: "<bold>Name:</bold> {{name}}",
+        error: "Failed to get location details.",
+        submit_success: "Successfully submitted changes!",
+        submit_error: "An error occurred while submitting. Please try again."
       },
       review: {
         no_results: "There are currently no suggestions to review.",
@@ -61,6 +64,21 @@ const locale: ResourceLanguage = {
       },
       amenity_card: {
         smoking_label: "<bold>Smoking:</bold> {{status}}"
+      },
+      edit_node_form: {
+        submission_type_label: "Submission Type",
+        login_mode_button: "Immediately Edit<br>(via OpenStreetMap Login)",
+        anonymous_mode_button: "Anonymous Suggestion<br>(no account)",
+        smoking_label: "Smoking",
+        comment_label: "Comment",
+        comment_caption: "How did you determine the smoking rules of this location? Keep the text short and clear. "
+          + "This may be recorded in OpenStreetMap.",
+        comment_placeholder: "Type comment here",
+        osm_login_button: "Login with OpenStreetMap",
+        osm_login_note: "No OpenStreetMap account? You can <registerLink>register here</registerLink> or switch the "
+          + "submission type to \"Anonymous Suggestion\".",
+        submit_button: "Submit",
+        back_button: "Go back"
       },
       suggestion_card: {
         current_smoking_label: "<bold>Current Smoking:</bold> {{status}}",

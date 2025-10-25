@@ -1,5 +1,6 @@
 import { Alert, Card, CardContent, Container, LinearProgress, Typography } from '@mui/material';
 import * as React from 'react';
+import { Trans, useTranslation, WithTranslation, withTranslation } from 'react-i18next';
 import { NavigateFunction, Params, useNavigate, useParams } from 'react-router';
 import { apiService } from '../ApiService';
 import { ElementType } from '../Models/ElementType';
@@ -7,7 +8,6 @@ import LocationModel from '../Models/LocationModel';
 import EditNodeForm from '../Components/EditNodeForm';
 import { FormData as EditNodeFormData } from '../Components/EditNodeForm';
 import { SnackbarContext } from '../SnackbarContext';
-import { Trans } from 'react-i18next';
 
 interface Props {
   params: Params<string>
@@ -19,14 +19,14 @@ interface State {
   error: boolean;
 }
 
-class EditNodePageInternal extends React.Component<Props, State> {
+class EditNodePageInternal extends React.Component<Props & WithTranslation, State> {
   static contextType = SnackbarContext;
   declare context: React.ContextType<typeof SnackbarContext>;
 
   private elementType: ElementType;
   private elementId: string;
 
-  constructor(props: Props) {
+  constructor(props: Props & WithTranslation) {
     super(props);
     this.elementType = this.props.params.elementType as ElementType;
     this.elementId = this.props.params.elementId;
@@ -48,7 +48,8 @@ class EditNodePageInternal extends React.Component<Props, State> {
           <Card variant="outlined" sx={{ m: 1 }}>
             <CardContent>
               <Typography>
-                <b>Name:</b> {this.state.location.name}
+                <Trans i18nKey="pages.edit_node.name_label" values={{ name: this.state.location.name }}
+                       components={{ bold: <b /> }} />
               </Typography>
             </CardContent>
           </Card>
@@ -60,7 +61,7 @@ class EditNodePageInternal extends React.Component<Props, State> {
       return (
         <Container sx={{ p: 2 }}>
           <Alert severity='error'>
-            <Trans i18nKey="pages.editNode.error" />
+            <Trans i18nKey="pages.edit_node.error" />
           </Alert>
         </Container>
       );
@@ -92,12 +93,14 @@ class EditNodePageInternal extends React.Component<Props, State> {
   }
 
   private onSubmissionSuccess(): void {
-    this.context.display({ message: "Successfully submitted changes!" });
+    const t = this.props.t;
+    this.context.display({ message: t('pages.edit_node.submit_success') });
     this.props.navigate("/edit");
   }
 
   private onSubmissionError(): void {
-    this.context.display({ message: "An error occurred while submitting. Please try again."});
+    const t = this.props.t;
+    this.context.display({ message: t('pages.edit_node.submit_error') });
   }
 
   private onBack(): void {
@@ -105,8 +108,11 @@ class EditNodePageInternal extends React.Component<Props, State> {
   }
 }
 
+const EditNodePageInternalWithTranslation = withTranslation()(EditNodePageInternal);
+
 export default function EditNodePage() {
   const params = useParams();
   const navigate = useNavigate();
-  return <EditNodePageInternal params={params} navigate={navigate} />
+  const {} = useTranslation();
+  return <EditNodePageInternalWithTranslation params={params} navigate={navigate} />;
 }

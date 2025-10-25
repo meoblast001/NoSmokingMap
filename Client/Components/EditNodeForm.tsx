@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import * as React from 'react';
-import { WithTranslation, withTranslation } from 'react-i18next';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import { SmokingStatus, smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import { osmAuthService } from '../OsmAuthService';
 import LoginIcon from '@mui/icons-material/Login';
@@ -36,12 +36,15 @@ interface State {
 }
 
 class EditNodeForm extends React.Component<Props & WithTranslation, State> {
+  private readonly osmRegistrationUri;
   private smokingType: SmokingStatus | null;
   private comment: string = "";
 
   constructor(props: Props & WithTranslation) {
     super(props);
     this.state = { submissionMode: 'login', formErrors: {} };
+
+    this.osmRegistrationUri = getOsmRegistrationUri();
   }
 
   render(): React.ReactNode {
@@ -76,7 +79,9 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
 
     return (
       <React.Fragment>
-        <FormLabel id="submission-type-label">Submission Type</FormLabel>
+        <FormLabel id="submission-type-label">
+          <Trans i18nKey="components.edit_node_form.submission_type_label" />
+        </FormLabel>
         <ToggleButtonGroup sx={{ flex: 1 }}
             aria-labelledby="submission-type-label"
             color="primary"
@@ -85,11 +90,11 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
             onChange={onToggleChange}>
 
           <ToggleButton sx={{ flex: 1 }} value="login">
-            Immediately Edit<br />(via OpenStreetMap Login)
+            <Trans i18nKey="components.edit_node_form.login_mode_button" />
           </ToggleButton>
 
           <ToggleButton sx={{ flex: 1 }} value="anonymous">
-            Anonymous Change Suggestion<br />(no account)
+            <Trans i18nKey="components.edit_node_form.anonymous_mode_button" />
           </ToggleButton>
         </ToggleButtonGroup>
       </React.Fragment>
@@ -100,7 +105,9 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
     const t = this.props.t;
     return (
       <React.Fragment>
-        <FormLabel id="smoking-type-label">Smoking</FormLabel>
+        <FormLabel id="smoking-type-label">
+          <Trans i18nKey="components.edit_node_form.smoking_label" />
+        </FormLabel>
         <Select aria-labelledby="smoking-type-label"
             onChange={event => this.smokingType = event.target.value as any}
             error={this.state.formErrors.smokingType}>
@@ -112,12 +119,14 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
           <MenuItem value="outside">{t(smokingStatusTranslationKey('outside'))}</MenuItem>
         </Select>
 
-        <FormLabel id="comment-label">Comment</FormLabel>
+        <FormLabel id="comment-label">
+          <Trans i18nKey="components.edit_node_form.comment_label" />
+        </FormLabel>
         <Typography variant="caption" sx={{ textAlign: 'center' }}>
-          How did you determine the smoking rules of this location? Keep the text short and clear. This may be
-          recorded in OpenStreetMap.
+          <Trans i18nKey="components.edit_node_form.comment_caption" />
         </Typography>
-        <TextField multiline rows={4} aria-labelledby="comment-label" label="Type comment here"
+        <TextField multiline rows={4} aria-labelledby="comment-label"
+          label={t('components.edit_node_form.comment_placeholder')}
           onChange={event => this.comment = event.target.value} />
       </React.Fragment>
     );
@@ -126,10 +135,12 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
   private renderLoginRequired(): React.ReactNode {
     return (
       <React.Fragment>
-        <Button variant="outlined" startIcon={<LoginIcon />} href="/osm_auth/login">Login with OpenStreetMap</Button>
+        <Button variant="outlined" startIcon={<LoginIcon />} href="/osm_auth/login">
+          <Trans i18nKey="components.edit_node_form.osm_login_button" />
+        </Button>
         <Typography variant="subtitle2" sx={{ textAlign: 'center' }}>
-          No OpenStreetMap account? You can <a href={getOsmRegistrationUri()} target="_blank">register here</a> or
-          switch the submission type to "Anonymous Suggestion".
+          <Trans i18nKey="components.edit_node_form.osm_login_note"
+                 components={{ registerLink: (<a href={this.osmRegistrationUri} target="_blank" />) }} />
         </Typography>
       </React.Fragment>
     )
@@ -137,11 +148,17 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
 
   private renderActionButtons(withSubmit: boolean): React.ReactNode {
     const submitButton = withSubmit
-      ? (<Button sx={{ flex: 1 }} variant="contained" onClick={() => this.onSubmit()}>Submit</Button>)
+      ? (
+        <Button sx={{ flex: 1 }} variant="contained" onClick={() => this.onSubmit()}>
+          <Trans i18nKey="components.edit_node_form.submit_button" />
+        </Button>
+      )
       : null;
     return (
       <ButtonGroup variant="outlined" size="large" sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Button sx={{ flex: 1 }} onClick={() => this.props.onBack()}>Go back</Button>
+        <Button sx={{ flex: 1 }} onClick={() => this.props.onBack()}>
+          <Trans i18nKey="components.edit_node_form.back_button" />
+        </Button>
         {submitButton}
       </ButtonGroup>
     )
