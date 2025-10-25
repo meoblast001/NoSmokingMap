@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
 import { Alert, Container, LinearProgress } from '@mui/material';
-import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 
 interface State {
@@ -62,7 +62,8 @@ class MapPage extends React.Component<WithTranslation, State> {
           <React.Fragment>
             <br />
             <Trans i18nKey="pages.map.smoking_label"
-                   values={{ status: t(smokingStatusTranslationKey(location.smoking)) }} />
+                   values={{ status: t(smokingStatusTranslationKey(location.smoking)) }}
+                   components={{ bold: <b /> }} />
           </React.Fragment>
         )
         : null;

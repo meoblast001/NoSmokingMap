@@ -1,19 +1,22 @@
 import * as React from 'react';
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import LocationModel from '../Models/LocationModel';
 import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 
 interface Props {
   location: LocationModel
   onClick: () => void
 }
 
-export default class AmenityCard extends React.Component<Props> {
-  constructor(props: Props) {
+export class AmenityCard extends React.Component<Props & WithTranslation> {
+  constructor(props: Props & WithTranslation) {
     super(props);
   }
 
   render(): React.ReactNode {
+    const t = this.props.t;
     return (
       <Card variant="outlined" sx={{ m: 1 }}>
         <CardActionArea onClick={() => this.onClick()}>
@@ -25,7 +28,9 @@ export default class AmenityCard extends React.Component<Props> {
                     {this.props.location.name}
                   </span>
                   <div style={{ paddingLeft: 5 }}>
-                    Smoking: {this.props.location.smoking != null ? this.props.location.smoking : "Unknown"}
+                    <Trans i18nKey="components.amenity_card.smoking_label"
+                           values={{ status: t(smokingStatusTranslationKey(this.props.location.smoking)) }}
+                           components={{ bold: <b /> }}/>
                   </div>
                 </Typography>
               </Box>
@@ -43,3 +48,5 @@ export default class AmenityCard extends React.Component<Props> {
     this.props.onClick();
   }
 }
+
+export default withTranslation()(AmenityCard);

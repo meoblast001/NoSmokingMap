@@ -13,11 +13,11 @@ import {
   Typography
 } from '@mui/material';
 import * as React from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { SmokingStatus, smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import { osmAuthService } from '../OsmAuthService';
 import LoginIcon from '@mui/icons-material/Login';
 import { getOsmRegistrationUri } from '../ApiService';
-import { WithTranslation, withTranslation } from 'react-i18next';
 
 export interface FormData {
   submissionMode: 'login' | 'anonymous';

@@ -10,6 +10,7 @@ const locale: ResourceLanguage = {
       about: "Über"
     },
     smoking_status: {
+      null: "Nicht bekannt",
       no: "Rauchen nirgendwo erlaubt",
       yes: "Überall erlaubt",
       dedicated: "Speziell für Raucher vorgesehen (z.B. Raucherclub)",
@@ -21,7 +22,7 @@ const locale: ResourceLanguage = {
       map: {
         attribution: "&copy; {{link}}-Beitragende",
         error: "Beim Abrufen der Lokale ist ein Fehler aufgetreten.",
-        smoking_label: "Rauchen: {{status}}"
+        smoking_label: "Rauchstatus: {{status}}"
       },
       searchEdit: {
         errorSearch: "Beim Suchen ist ein Fehler aufgetreten.",
@@ -48,6 +49,14 @@ const locale: ResourceLanguage = {
         search_terms: "Suchbegriffe",
         search_button: "Suchen",
         show_nearby_locations: "Lokale in meiner Nähe anzeigen"
+      },
+      amenity_card: {
+        smoking_label: "<bold>Rauchstatus:</bold> {{status}}"
+      },
+      suggestion_card: {
+        current_smoking_label: "<bold>Bisheriger Rauchstatus:</bold> {{status}}",
+        new_smoking_label: "<bold>Neuer Rauchstatus:</bold> {{status}}",
+        comment_label: "<bold>Kommentar:</bold> {{comment}}"
       }
     }
   }

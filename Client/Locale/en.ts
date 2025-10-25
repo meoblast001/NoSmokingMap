@@ -10,6 +10,7 @@ const locale: ResourceLanguage = {
       about: "About"
     },
     smoking_status: {
+      null: "Unknown",
       no: "No smoking anywhere",
       yes: "Allowed everywhere",
       dedicated: "Dedicated to smokers (e.g. smokers' club)",
@@ -48,6 +49,14 @@ const locale: ResourceLanguage = {
         search_terms: "Search Terms",
         search_button: "Search",
         show_nearby_locations: "Show Nearby Locations"
+      },
+      amenity_card: {
+        smoking_label: "<bold>Smoking:</bold> {{status}}"
+      },
+      suggestion_card: {
+        current_smoking_label: "<bold>Current Smoking:</bold> {{status}}",
+        new_smoking_label: "<bold>New Smoking:</bold> {{status}}",
+        comment_label: "<bold>Comment:</bold> {{comment}}"
       }
     }
   }

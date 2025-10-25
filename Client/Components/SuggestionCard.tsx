@@ -1,8 +1,10 @@
 import * as React from "react";
+import { Trans, WithTranslation, withTranslation } from 'react-i18next';
 import SuggestionModel from "../Models/SuggestionModel";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import { smokingStatusTranslationKey } from "../Models/SmokingStatus";
 
 interface Props {
   suggestion: SuggestionModel;
@@ -10,7 +12,7 @@ interface Props {
   onReject: () => void;
 }
 
-export default class SuggestionCard extends React.Component<Props> {
+export class SuggestionCard extends React.Component<Props & WithTranslation> {
   render(): React.ReactNode {
     const currentSmoking = this.props.suggestion.location.smoking;
     const newSmoking = this.props.suggestion.newSmoking;
@@ -24,9 +26,17 @@ export default class SuggestionCard extends React.Component<Props> {
                   {this.props.suggestion.location.name}
                 </span>
                 <div style={{ paddingLeft: 5 }}>
-                  <b>Current Smoking:</b> {currentSmoking != null ? currentSmoking : "Unknown"}<br />
-                  <b>New Smoking:</b> {newSmoking != null ? newSmoking : "Unknown"}<br />
-                  <b>Comment:</b> {this.props.suggestion.comment}
+                  <Trans i18nKey="components.suggestion_card.current_smoking_label"
+                         values={{ status: smokingStatusTranslationKey(currentSmoking) }}
+                         components={{ bold: <b /> }} />
+                  <br />
+                  <Trans i18nKey="components.suggestion_card.new_smoking_label"
+                         values={{ status: smokingStatusTranslationKey(newSmoking) }}
+                         components={{ bold: <b /> }} />
+                  <br />
+                  <Trans i18nKey="components.suggestion_card.comment_label"
+                         values={{ comment: this.props.suggestion.comment }}
+                         components={{ bold: <b /> }} />
                 </div>
               </Typography>
             </Box>
@@ -45,3 +55,5 @@ export default class SuggestionCard extends React.Component<Props> {
     )
   }
 }
+
+export default withTranslation()(SuggestionCard);

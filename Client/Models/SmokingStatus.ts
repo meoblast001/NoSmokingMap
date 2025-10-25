@@ -5,6 +5,6 @@ export function isSmokingStatus(x: any): x is SmokingStatus {
   return SmokingStatusValues.includes(x);
 }
 
-export function smokingStatusTranslationKey(smokingStatus: SmokingStatus) {
-  return `smoking_status.${smokingStatus}`;
+export function smokingStatusTranslationKey(smokingStatus: SmokingStatus | null) {
+  return smokingStatus !== null ? `smoking_status.${smokingStatus}` : `smoking_status.null`;
 }
