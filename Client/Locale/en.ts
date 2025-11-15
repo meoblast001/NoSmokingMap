@@ -24,7 +24,8 @@ const locale: ResourceLanguage = {
       map: {
         attribution: "&copy; {{link}} contributors",
         error: "Failed to get locations.",
-        smoking_label: "Smoking: {{status}}"
+        smoking_label: "Smoking: {{status}}",
+        geolocation_error: "Could not zoom to your location."
       },
       search_edit: {
         error_search: "Failed to search.",

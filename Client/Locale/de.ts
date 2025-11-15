@@ -24,7 +24,8 @@ const locale: ResourceLanguage = {
       map: {
         attribution: "&copy; {{link}}-Beitragende",
         error: "Beim Abrufen der Lokale ist ein Fehler aufgetreten.",
-        smoking_label: "Rauchstatus: {{status}}"
+        smoking_label: "Rauchstatus: {{status}}",
+        geolocation_error: "Dein Standort konnte nicht herangezoomt werden."
       },
       search_edit: {
         name_label: "<bold>Name:</bold> {{name}}",

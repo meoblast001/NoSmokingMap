@@ -5,11 +5,14 @@ import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
 import { Alert, Container, LinearProgress } from '@mui/material';
 import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
+import MapButtons from '../Components/MapButtons';
 
 interface State {
   locations: LocationModel[] | null;
   error: boolean;
 }
+
+const DefaultZoomLevel: number = 11;
 
 class MapPage extends React.Component<WithTranslation, State> {
   constructor(props: WithTranslation) {
@@ -30,10 +33,11 @@ class MapPage extends React.Component<WithTranslation, State> {
     if (this.state.locations) {
       return (
         <div style={{ width: '100%', height: '100%' }}>
-          <MapContainer center={defaultCoordinates} zoom={11}>
+          <MapContainer center={defaultCoordinates} zoom={DefaultZoomLevel}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                        attribution={t('pages.map.attribution', { link: attributionLink })} />
             {this.getMarkers()}
+            <MapButtons />
           </MapContainer>
         </div>
       );
