@@ -10,7 +10,7 @@ import { FormData as EditNodeFormData } from '../Components/EditNodeForm';
 import { SnackbarContext } from '../SnackbarContext';
 
 interface Props {
-  params: Params<string>
+  params: Params<string>;
   navigate: NavigateFunction;
 }
 
@@ -113,6 +113,5 @@ const EditNodePageInternalWithTranslation = withTranslation()(EditNodePageIntern
 export default function EditNodePage() {
   const params = useParams();
   const navigate = useNavigate();
-  const {} = useTranslation();
   return <EditNodePageInternalWithTranslation params={params} navigate={navigate} />;
 }

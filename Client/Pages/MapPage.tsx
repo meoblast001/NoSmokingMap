@@ -1,11 +1,18 @@
 import * as React from 'react';
+import { NavigateFunction, useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Trans, WithTranslation, withTranslation } from 'react-i18next';
+import { Alert, Button, Container, LinearProgress, Typography } from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google';
+import EditIcon from '@mui/icons-material/Edit';
 import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
-import { Alert, Container, LinearProgress } from '@mui/material';
 import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import MapButtons from '../Components/MapButtons';
+
+interface Props {
+  navigate: NavigateFunction;
+}
 
 interface State {
   locations: LocationModel[] | null;
@@ -14,8 +21,8 @@ interface State {
 
 const DefaultZoomLevel: number = 11;
 
-class MapPage extends React.Component<WithTranslation, State> {
-  constructor(props: WithTranslation) {
+class MapPageInternal extends React.Component<Props & WithTranslation, State> {
+  constructor(props: Props & WithTranslation) {
     super(props);
     this.state = { locations: null, error: false };
   }
@@ -72,16 +79,51 @@ class MapPage extends React.Component<WithTranslation, State> {
         )
         : null;
 
+      const buttonContainerStyle: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'row',
+      };
+      const buttonStyle: React.CSSProperties = {
+        flexGrow: 1,
+        margin: '0px 5px'
+      };
+
       return (
-        <Marker position={[location.lat, location.lon]}>
+        <Marker key={location.id} position={[location.lat, location.lon]}>
           <Popup>
-            <b>{location.name}</b>
-            {smokingStatus}
+            <Typography>
+              <b>{location.name}</b>
+              {smokingStatus}
+            </Typography>
+            <div style={buttonContainerStyle}>
+              <Button variant="outlined" style={buttonStyle} onClick={() => this.onGoogleButton(location)}>
+                <GoogleIcon />
+              </Button>
+              <Button variant="outlined" style={buttonStyle} onClick={() => this.onEditButton(location)}>
+                <EditIcon />
+              </Button>
+            </div>
           </Popup>
         </Marker>
       )
     });
   }
+
+  private onGoogleButton(location: LocationModel) {
+    if (location.lat !== null && location.lon !== null) {
+      const name = encodeURIComponent(location.name);
+      window.open(`https://www.google.com/maps/?q=${name}&ll=${location.lat},${location.lon}&z=16`, '_blank');
+    }
+  }
+
+  private onEditButton(location: LocationModel) {
+    this.props.navigate(`/edit/${location.type}/${location.id}`);
+  }
 }
 
-export default withTranslation()(MapPage);
+const MapPageInternalWithTranslation = withTranslation()(MapPageInternal);
+
+export default function MapPage() {
+  const navigate = useNavigate();
+  return <MapPageInternalWithTranslation navigate={navigate} />
+}
