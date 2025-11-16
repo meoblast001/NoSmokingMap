@@ -76,7 +76,7 @@ public class ApplicationController : Controller
             ],
             StartUrl = "/",
             Display = "standalone",
-            ThemeColor = "#000000",
+            ThemeColor = "#ffffff",
             BackgroundColor = "#ffffff"
         };
         Response.ContentType = "application/manifest+json";
