@@ -11,12 +11,14 @@ public class SuggestionViewModel
 
     public LocationViewModel? Location { get; set; }
 
-    public static SuggestionViewModel Create(PointOfInterestEditSuggestionDbo dbo)
+    public static SuggestionViewModel? Create(PointOfInterestEditSuggestionDbo dbo)
     {
+        if (dbo.Changes == null)
+            return null;
         return new SuggestionViewModel()
         {
             Id = dbo.Id,
-            NewSmoking = dbo.Changes?.Smoking ?? OverpassSmoking.No,
+            NewSmoking = dbo.Changes.Smoking,
             Comment = dbo.Comment
         };
     }

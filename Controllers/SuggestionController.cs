@@ -34,7 +34,14 @@ public class SuggestionController : Controller
         var totalSuggestions = dbContext.PoiEditSuggestions.Count();
         var suggestions = dbContext.PoiEditSuggestions.Skip(offset).Take(limit)
             .AsEnumerable()
-            .Select(dbo => (dbo, viewModel: SuggestionViewModel.Create(dbo)))
+            .SelectMany<PointOfInterestEditSuggestionDbo,
+                (PointOfInterestEditSuggestionDbo dbo, SuggestionViewModel viewModel)>(dbo =>
+            {
+                var suggestionViewModel = SuggestionViewModel.Create(dbo);
+                return suggestionViewModel != null
+                    ? Utilities.Enumerable.Yield((dbo, viewModel: suggestionViewModel))
+                    : System.Linq.Enumerable.Empty<(PointOfInterestEditSuggestionDbo, SuggestionViewModel)>();
+            })
             .ToArray();
 
         try
@@ -127,8 +134,13 @@ public class SuggestionController : Controller
 
         if (requestParams.Approve)
         {
+            if (suggestionDbo.Changes == null)
+            {
+                logger.LogError("Invalid changes for {SuggestionId}", suggestionDbo.Id);
+                return StatusCode(500);
+            }
             await elementUpdateService.UpdateSmoking(accessToken, suggestionDbo.ElementId, suggestionDbo.ElementType,
-                suggestionDbo.Changes?.Smoking ?? OverpassSmoking.No, requestParams.Comment);
+                suggestionDbo.Changes.Smoking, requestParams.Comment);
         }
 
         dbContext.PoiEditSuggestions.Remove(suggestionDbo);
