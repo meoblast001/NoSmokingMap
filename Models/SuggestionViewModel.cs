@@ -16,7 +16,7 @@ public class SuggestionViewModel
         return new SuggestionViewModel()
         {
             Id = dbo.Id,
-            NewSmoking = dbo.Changes.Smoking,
+            NewSmoking = dbo.Changes?.Smoking ?? OverpassSmoking.No,
             Comment = dbo.Comment
         };
     }

@@ -37,7 +37,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.11" />
     <PackageReference Include="OsmSharp" Version="6.2.0" />
   </ItemGroup>
 
@@ -52,10 +52,7 @@
     <Delete Files="version.txt" />
   </Target>
 
-  <Target Name="ClientBuild"
-      BeforeTargets="Build"
-      Inputs="@(UpToDateCheckInput)"
-      Outputs="wwwroot/dist/main.build.js">
+  <Target Name="ClientBuild" BeforeTargets="Build" Inputs="@(UpToDateCheckInput)" Outputs="wwwroot/dist/main.build.js">
     <Exec Condition="$(Configuration) == 'Debug'" Command="npm run build-dev" ContinueOnError="false" />
     <Exec Condition="$(Configuration) == 'Release'" Command="npm run build" ContinueOnError="false" />
   </Target>

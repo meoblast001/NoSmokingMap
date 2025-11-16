@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -18,9 +19,18 @@ public class ApplicationDbContext : DbContext, IDataProtectionKeyContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<PointOfInterestEditSuggestionDbo>().Property(dbo => dbo.CreatedOn)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<PointOfInterestEditSuggestionDbo>().Property(dbo => dbo.ElementType)
             .HasConversion(new EnumToStringConverter<OverpassElementType>());
+
+        var jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        var changesValueConverter = new ValueConverter<PointOfInterestChangesDbo?, string>(
+            dbo => JsonSerializer.Serialize(dbo, jsonSerializerOptions),
+            json => JsonSerializer.Deserialize<PointOfInterestChangesDbo>(json, jsonSerializerOptions));
+        modelBuilder.Entity<PointOfInterestEditSuggestionDbo>().Property(dbo => dbo.Changes)
+            .HasConversion(changesValueConverter)
+            .IsRequired();
     }
 }

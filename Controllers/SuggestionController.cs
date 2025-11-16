@@ -128,7 +128,7 @@ public class SuggestionController : Controller
         if (requestParams.Approve)
         {
             await elementUpdateService.UpdateSmoking(accessToken, suggestionDbo.ElementId, suggestionDbo.ElementType,
-                suggestionDbo.Changes.Smoking, requestParams.Comment);
+                suggestionDbo.Changes?.Smoking ?? OverpassSmoking.No, requestParams.Comment);
         }
 
         dbContext.PoiEditSuggestions.Remove(suggestionDbo);

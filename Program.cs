@@ -7,7 +7,6 @@ using NoSmokingMap.Models;
 using NoSmokingMap.Models.Database;
 using NoSmokingMap.Services;
 using NoSmokingMap.Settings;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,14 +27,7 @@ builder.Services.Configure<MapSettings>(builder.Configuration.GetSection("MapSet
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<MapSettings>>().Value);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.Configuration.GetConnectionString("ApplicationDatabase"));
-    dataSourceBuilder.EnableDynamicJson();
-    var jsonSerializerOptions = new JsonSerializerOptions();
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-    dataSourceBuilder.ConfigureJsonOptions(jsonSerializerOptions);
-    options.UseNpgsql(dataSourceBuilder.Build());
-});
+    options.UseSqlite(builder.Configuration.GetConnectionString("ApplicationDatabase")));
 
 builder.Services.AddDataProtection()
     .PersistKeysToDbContext<ApplicationDbContext>()
@@ -72,6 +64,11 @@ app.MapControllerRoute(name: "spa-catch-all",
     pattern: "{*path:regex(^(?!api/|application/).+$)}",
     defaults: new { controller = "Spa", action = "Index" });
 
-var endpointDataSource = app.Services.GetRequiredService<EndpointDataSource>();
+using (var scope = app.Services.CreateScope())
+{
+    var appDatabase = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database;
+    appDatabase.Migrate();
+    appDatabase.ExecuteSqlRaw("PRAGMA journal_mode=WAL;");
+}
 
 app.Run();
