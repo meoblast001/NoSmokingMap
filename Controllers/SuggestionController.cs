@@ -39,8 +39,8 @@ public class SuggestionController : Controller
             {
                 var suggestionViewModel = SuggestionViewModel.Create(dbo);
                 return suggestionViewModel != null
-                    ? Utilities.Enumerable.Yield((dbo, viewModel: suggestionViewModel))
-                    : System.Linq.Enumerable.Empty<(PointOfInterestEditSuggestionDbo, SuggestionViewModel)>();
+                    ? EnumerableUtils.Yield((dbo, viewModel: suggestionViewModel))
+                    : Enumerable.Empty<(PointOfInterestEditSuggestionDbo, SuggestionViewModel)>();
             })
             .ToArray();
 

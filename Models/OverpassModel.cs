@@ -1,5 +1,6 @@
 using NoSmokingMap.Models.Overpass;
 using NoSmokingMap.Services;
+using NoSmokingMap.Utilities;
 
 namespace NoSmokingMap.Models;
 
@@ -68,12 +69,15 @@ public class OverpassModel
     public IEnumerable<OverpassElement> GetAmenitiesWithinDistance(Geocoordinates userPosition, double limitMeters)
     {
         return allAmenities
-            .Where(amenity =>
+            .SelectMany<OverpassElement, (OverpassElement amenity, Geocoordinates geocoord)>(amenity =>
             {
-                var amenityLocation = amenity.GetLocation();
-                var distance = amenityLocation?.MeterDistance(userPosition);
-                return distance.HasValue && distance < limitMeters;
-            });
+                var geocoord = amenity.GetLocation();
+                return geocoord != null
+                    ? EnumerableUtils.Yield((amenity, geocoord: (Geocoordinates) geocoord))
+                    : Enumerable.Empty<(OverpassElement, Geocoordinates)>();
+            })
+            .WhereInDistanceLimit(locatedAmenity => locatedAmenity.geocoord, userPosition, limitMeters)
+            .Select(locatedAmenity => locatedAmenity.amenity);
     }
 
     private void GroupAllAmenitiesBySmoking()

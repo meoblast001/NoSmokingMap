@@ -11,6 +11,13 @@ public struct Geocoordinates
         Longitude = lon;
     }
 
+    public double EuclidianDistance(Geocoordinates other)
+    {
+        double latDiff = other.Latitude - Latitude;
+        double lonDiff = other.Longitude - Longitude;
+        return latDiff * latDiff + lonDiff * lonDiff;
+    }
+
     public double MeterDistance(Geocoordinates other)
     {
         // Haversine Distance.
