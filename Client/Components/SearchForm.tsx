@@ -21,7 +21,8 @@ class SearchForm extends React.Component<Params & WithTranslation> {
     const t = this.props.t;
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }} component="form"
+            onSubmit={(e) => this.onSearchSubmit(e)}>
           <TextField label={t('components.search_form.search_terms')}
               variant="outlined"
               onChange={(event) => this.onSearchTermChanged(event)}
@@ -29,7 +30,7 @@ class SearchForm extends React.Component<Params & WithTranslation> {
               sx={{ flex: 1 }} />
           <Button variant="contained"
               endIcon={<SearchIcon />}
-              onClick={() => this.onSearch()}
+              type="submit"
               disabled={this.props.blockingInput}>
             <Trans i18nKey="components.search_form.search_button" />
           </Button>
@@ -48,8 +49,9 @@ class SearchForm extends React.Component<Params & WithTranslation> {
     this.searchTerm = changeEvent.target.value;
   }
 
-  private onSearch() {
+  private onSearchSubmit(evt: React.FormEvent<HTMLFormElement>) {
     this.props.onSearch(this.searchTerm);
+    evt.preventDefault();
   }
 
   private onShowNearbyLocations() {
