@@ -43,8 +43,6 @@ export class ApiError {
   }
 }
 
-const csrfToken = document.getElementById('csrf-token').innerHTML;
-
 async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string]: string } | null,
     guard: (x: any) => x is TOut): Promise<TOut> {
   if (params) {
@@ -83,13 +81,15 @@ async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string
 }
 
 async function httpPost(uri: string, formData: { [key: string]: any }): Promise<Response> {
+  const antiforgeryToken = (await fetchAntiforgeryToken()).token;
+
   var response: Response;
   try {
     response = await fetch(uri, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': csrfToken
+        'X-CSRF-TOKEN': antiforgeryToken
       },
       body: JSON.stringify(formData)
     });
@@ -105,18 +105,38 @@ async function httpPost(uri: string, formData: { [key: string]: any }): Promise<
   return response;
 }
 
+interface AntiforgeryToken {
+  token: string
+}
+
+function isAnAntiforgeryToken(x: any): x is AntiforgeryToken {
+  return typeof(x) == 'object' && typeof(x.token) == 'string';
+}
+
+var globalAntiforgeryToken: AntiforgeryToken | null = null;
+
+async function fetchAntiforgeryToken(): Promise<AntiforgeryToken> {
+  if (!globalAntiforgeryToken) {
+    globalAntiforgeryToken = await httpGetWithJsonResponse('/application/antiforgery_token', null,
+      isAnAntiforgeryToken);
+  }
+  return globalAntiforgeryToken;
+}
+
 export default class ApiService {
   fetchLocations(): Promise<LocationModel[]> {
     return httpGetWithJsonResponse('/api/overpass/locations', null, (result) => isArrayOf(result, isLocationModel));
   }
 
   async searchLocationsByTerms(searchTerms: string): Promise<LocationModel[]> {
-    return httpGetWithJsonResponse('/api/overpass/locations_by_terms', { searchTerms }, (result) => isArrayOf(result, isLocationModel));
+    return httpGetWithJsonResponse('/api/overpass/locations_by_terms', { searchTerms },
+      (result) => isArrayOf(result, isLocationModel));
   }
 
   async searchLocationsByGeoposition(lat: number, lon: number): Promise<LocationModel[]> {
     const params = { lat: lat.toString(), lon: lon.toString() };
-    return httpGetWithJsonResponse('/api/overpass/locations_by_geoposition', params, (result) => isArrayOf(result, isLocationModel));
+    return httpGetWithJsonResponse('/api/overpass/locations_by_geoposition', params,
+      (result) => isArrayOf(result, isLocationModel));
   }
 
   async fetchLocationDetails(elementId: string, elementType: ElementType): Promise<LocationModel> {

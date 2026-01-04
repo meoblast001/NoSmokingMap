@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Settings;
 
@@ -47,10 +48,12 @@ public class ApplicationController : Controller
     }
 
     private readonly MapSettings mapSettings;
+    private readonly IAntiforgery antiforgery;
 
-    public ApplicationController(MapSettings mapSettings)
+    public ApplicationController(MapSettings mapSettings, IAntiforgery antiforgery)
     {
         this.mapSettings = mapSettings;
+        this.antiforgery = antiforgery;
     }
 
     [Route("manifest.webmanifest")]
@@ -81,5 +84,12 @@ public class ApplicationController : Controller
         };
         Response.ContentType = "application/manifest+json";
         return Json(manifestData);
+    }
+
+    [Route("antiforgery_token")]
+    public IActionResult GetAntiforgeryToken()
+    {
+        var tokens = antiforgery.GetAndStoreTokens(HttpContext);
+        return Json(new { Token = tokens.RequestToken });
     }
 }
