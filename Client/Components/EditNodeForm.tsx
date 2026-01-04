@@ -51,7 +51,7 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
     const isLoginRequired = this.state.submissionMode == 'login' && !osmAuthService.isLoggedIn();
 
     return (
-      <Card variant="outlined" sx={{ m: 1 }}>
+      <Card variant="outlined" sx={{ m: 1 }} component="form" onSubmit={(e) => this.onSubmit(e)}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2, alignItems: 'stretch' }}>
           {this.renderSubmissionTypeSubForm()}
         </CardContent>
@@ -149,7 +149,7 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
   private renderActionButtons(withSubmit: boolean): React.ReactNode {
     const submitButton = withSubmit
       ? (
-        <Button sx={{ flex: 1 }} variant="contained" onClick={() => this.onSubmit()}>
+        <Button sx={{ flex: 1 }} variant="contained" type="submit">
           <Trans i18nKey="components.edit_node_form.submit_button" />
         </Button>
       )
@@ -164,7 +164,9 @@ class EditNodeForm extends React.Component<Props & WithTranslation, State> {
     )
   }
 
-  private onSubmit(): void {
+  private onSubmit(evt: React.FormEvent<HTMLFormElement>): void {
+    evt.preventDefault();
+
     let formErrors = this.state.formErrors;
     formErrors.smokingType = this.smokingType == null;
 

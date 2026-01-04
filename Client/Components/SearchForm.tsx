@@ -50,8 +50,8 @@ class SearchForm extends React.Component<Params & WithTranslation> {
   }
 
   private onSearchSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    this.props.onSearch(this.searchTerm);
     evt.preventDefault();
+    this.props.onSearch(this.searchTerm);
   }
 
   private onShowNearbyLocations() {
