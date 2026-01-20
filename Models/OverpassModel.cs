@@ -6,6 +6,8 @@ namespace NoSmokingMap.Models;
 
 public class OverpassModel
 {
+    private const int FetchPoiAttempts = 3;
+
     private readonly OverpassApiService overpassApiService;
     private readonly OverpassApiService.PoiKeySearch poiKeySearch;
 
@@ -44,7 +46,7 @@ public class OverpassModel
     {
         if (lastQueryTime == null || DateTime.UtcNow > lastQueryTime.Value.AddDays(1))
         {
-            allAmenities = await overpassApiService.FetchPointsOfInterest(poiKeySearch);
+            allAmenities = await overpassApiService.FetchPointsOfInterest(poiKeySearch, FetchPoiAttempts);
             GroupAllAmenitiesBySmoking();
             lastQueryTime = DateTime.UtcNow;
         }
