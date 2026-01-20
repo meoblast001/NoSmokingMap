@@ -86,6 +86,10 @@ const locale: ResourceLanguage = {
         current_smoking_label: "<bold>Bisheriger Rauchstatus:</bold> {{status}}",
         new_smoking_label: "<bold>Neuer Rauchstatus:</bold> {{status}}",
         comment_label: "<bold>Kommentar:</bold> {{comment}}"
+      },
+      map_filter_dialog: {
+        title: "Filtereinstellungen der Karte",
+        apply_button: "Anwenden"
       }
     }
   }

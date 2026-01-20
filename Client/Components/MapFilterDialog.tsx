@@ -1,7 +1,8 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
 import * as React from 'react';
-import { SmokingStatus } from '../Models/SmokingStatus';
+import { SmokingStatus, smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import { MapFilterPreferencesData, mapFilterPreferencesModel } from '../Models/MapFilterPreferencesModel';
+import { Trans, withTranslation, WithTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -12,46 +13,51 @@ interface State {
   preferencesData: MapFilterPreferencesData;
 }
 
-export default class MapFilterDialog extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class MapFilterDialog extends React.Component<Props & WithTranslation, State> {
+  constructor(props: Props & WithTranslation) {
     super(props);
     this.state = { preferencesData: mapFilterPreferencesModel.retrievePreferences() }
   }
 
   render(): React.ReactNode {
+    const t = this.props.t;
     return (
       <Dialog open={this.props.open}>
-        <DialogTitle>Map Filter Settings</DialogTitle>
+        <DialogTitle>
+          <Trans i18nKey="components.map_filter_dialog.title" />
+        </DialogTitle>
         <DialogContent>
           <FormGroup>
             <FormControlLabel
               control={<Checkbox checked={true} disabled={true} />}
-              label="No smoking" />
+              label={t(smokingStatusTranslationKey('no'))} />
             <FormControlLabel
               control={
                 <Checkbox
                   checked={this.state.preferencesData.smokingStatuses.has('outside')}
                   onChange={(evt) => this.toggleSmokingStatus('outside', evt.target.checked)} />
               }
-              label="Outside" />
+              label={t(smokingStatusTranslationKey('outside'))} />
             <FormControlLabel
               control={
                 <Checkbox
                   checked={this.state.preferencesData.smokingStatuses.has('isolated')}
                   onChange={(evt) => this.toggleSmokingStatus('isolated', evt.target.checked)} />
               }
-              label="Isolated" />
+              label={t(smokingStatusTranslationKey('isolated'))} />
             <FormControlLabel
               control={
                 <Checkbox
                   checked={this.state.preferencesData.smokingStatuses.has('separated')}
                   onChange={(evt) => this.toggleSmokingStatus('separated', evt.target.checked)} />
               }
-              label="Separated" />
+              label={t(smokingStatusTranslationKey('separated'))} />
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => this.onApply()}>Apply</Button>
+          <Button onClick={() => this.onApply()}>
+            <Trans i18nKey="components.map_filter_dialog.apply_button" />
+          </Button>
         </DialogActions>
       </Dialog>
     );
@@ -72,3 +78,5 @@ export default class MapFilterDialog extends React.Component<Props, State> {
     this.props.onSubmit();
   }
 }
+
+export default withTranslation()(MapFilterDialog);
