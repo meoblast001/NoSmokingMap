@@ -2,12 +2,17 @@ import * as React from 'react';
 import { useMap } from 'react-leaflet';
 import Control from 'react-leaflet-custom-control';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { getCurrentPosition } from '../Geolocation';
 import { useTranslation } from 'react-i18next';
 
 const FlyInZoomLevel: number = 16;
 
-export default function MapButtons(): React.ReactNode {
+interface Props {
+  onFilterButton: () => void;
+}
+
+export default function MapButtons(props: Props): React.ReactNode {
   const map = useMap();
   const { t } = useTranslation();
 
@@ -41,6 +46,10 @@ export default function MapButtons(): React.ReactNode {
     <Control position="topright">
       <a style={buttonStyle} onClick={() => onClickGeolocationButton()}>
         <LocationSearchingIcon style={{ fontSize: '18px' }} />
+      </a>
+
+      <a style={buttonStyle} onClick={() => props.onFilterButton()}>
+        <FilterListIcon style={{ fontSize: '18px' }} />
       </a>
     </Control>
   );

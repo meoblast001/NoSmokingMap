@@ -9,6 +9,8 @@ import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
 import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import MapButtons from '../Components/MapButtons';
+import MapFilterDialog from '../Components/MapFilterDialog';
+import * as FilterDialog from '../Components/MapFilterDialog';
 
 interface Props {
   navigate: NavigateFunction;
@@ -17,6 +19,7 @@ interface Props {
 interface State {
   locations: LocationModel[] | null;
   error: boolean;
+  isShowingFilterDialog: boolean;
 }
 
 const DefaultZoomLevel: number = 11;
@@ -24,13 +27,12 @@ const DefaultZoomLevel: number = 11;
 class MapPageInternal extends React.Component<Props & WithTranslation, State> {
   constructor(props: Props & WithTranslation) {
     super(props);
-    this.state = { locations: null, error: false };
+    this.state = { locations: null, error: false, isShowingFilterDialog: false };
   }
 
   componentDidMount(): void {
-    apiService.fetchLocations()
-      .then(locations => { this.setState({ locations, error: false }) })
-      .catch(() => { this.setState({ locations: null, error: true })});
+    let filterPreferences = FilterDialog.retrievePreferences();
+    this.fetchLocations(filterPreferences);
   }
 
   render(): React.ReactNode {
@@ -39,14 +41,17 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
     const attributionLink = "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a>";
     if (this.state.locations) {
       return (
-        <div style={{ width: '100%', height: '100%' }}>
-          <MapContainer center={defaultCoordinates} zoom={DefaultZoomLevel}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                       attribution={t('pages.map.attribution', { link: attributionLink })} />
-            {this.getMarkers()}
-            <MapButtons />
-          </MapContainer>
-        </div>
+        <React.Fragment>
+          <div style={{ width: '100%', height: '100%' }}>
+            <MapContainer center={defaultCoordinates} zoom={DefaultZoomLevel}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution={t('pages.map.attribution', { link: attributionLink })} />
+              {this.getMarkers()}
+              <MapButtons onFilterButton={() => this.onFilterButton()}/>
+            </MapContainer>
+          </div>
+          <MapFilterDialog open={this.state.isShowingFilterDialog} onSubmit={data => this.onFilterSubmit(data)} />
+        </React.Fragment>
       );
     } else if (this.state.error) {
       return (
@@ -63,6 +68,21 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
         </Container>
       );
     }
+  }
+
+  private fetchLocations(filterPreferences: FilterDialog.FormData) {
+    apiService.fetchLocations(Array.from(filterPreferences.smokingStatuses))
+      .then(locations => { this.setState({ locations, error: false }) })
+      .catch(() => { this.setState({ locations: null, error: true })});
+  }
+
+  private onFilterButton() {
+    this.setState({ isShowingFilterDialog: true });
+  }
+
+  private onFilterSubmit(formData: FilterDialog.FormData) {
+    console.debug(formData);
+    this.setState({ isShowingFilterDialog: false });
   }
 
   private getMarkers(): React.ReactNode[] {

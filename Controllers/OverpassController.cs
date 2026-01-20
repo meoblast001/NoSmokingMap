@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using NoSmokingMap.Models;
+using NoSmokingMap.Models.Overpass;
 using NoSmokingMap.Settings;
 
 namespace NoSmokingMap.Controllers;
@@ -20,13 +21,12 @@ public class OverpassController : Controller
     }
 
     [Route("locations")]
-    public async Task<IActionResult> Locations()
+    public async Task<IActionResult> Locations([FromQuery] OverpassSmoking[] smokingStatuses)
     {
         await overpassModel.Update();
 
-        var content = overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.No)
-            .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Isolated))
-            .Union(overpassModel.GetAmenitiesBySmoking(Models.Overpass.OverpassSmoking.Outside));
+        var content = smokingStatuses.Select(overpassModel.GetAmenitiesBySmoking)
+            .Aggregate(Enumerable.Empty<OverpassElement>(), (lhs, rhs) => lhs.Union(rhs));
 
         var overpassData = content.Select(LocationViewModel.TryCreate)
             .Where(element => element != null)

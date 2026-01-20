@@ -43,12 +43,9 @@ export class ApiError {
   }
 }
 
-async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string]: string } | null,
+async function httpGetFromUrlSearchParamsWithJsonResponse<TOut>(uri: string, searchParams: URLSearchParams | null,
     guard: (x: any) => x is TOut): Promise<TOut> {
-  if (params) {
-    const searchParams = new URLSearchParams();
-    for (let key in params)
-      searchParams.append(key, params[key]);
+  if (searchParams) {
     uri += `?${searchParams}`;
   }
 
@@ -78,6 +75,18 @@ async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string
   }
 
   return result;
+}
+
+async function httpGetWithJsonResponse<TOut>(uri: string, params: { [key: string]: string } | null,
+    guard: (x: any) => x is TOut): Promise<TOut> {
+  let searchParams: URLSearchParams | null = null;
+  if (params) {
+    searchParams = new URLSearchParams();
+    for (let key in params)
+      searchParams.append(key, params[key]);
+  }
+
+  return httpGetFromUrlSearchParamsWithJsonResponse(uri, searchParams, guard);
 }
 
 async function httpPost(uri: string, formData: { [key: string]: any }): Promise<Response> {
@@ -124,8 +133,12 @@ async function fetchAntiforgeryToken(): Promise<AntiforgeryToken> {
 }
 
 export default class ApiService {
-  fetchLocations(): Promise<LocationModel[]> {
-    return httpGetWithJsonResponse('/api/overpass/locations', null, (result) => isArrayOf(result, isLocationModel));
+  async fetchLocations(smokingStatuses: SmokingStatus[]): Promise<LocationModel[]> {
+    let urlSearchParams = new URLSearchParams();
+    for (let smokingStatus of smokingStatuses)
+      urlSearchParams.append('smokingStatuses', smokingStatus);
+    return httpGetFromUrlSearchParamsWithJsonResponse('/api/overpass/locations', urlSearchParams,
+      (result) => isArrayOf(result, isLocationModel));
   }
 
   async searchLocationsByTerms(searchTerms: string): Promise<LocationModel[]> {

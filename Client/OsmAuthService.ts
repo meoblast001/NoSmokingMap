@@ -1,9 +1,9 @@
 export default class OsmAuthService {
-  get authCookingKey(): string { return "auth_token"; }
+  get authCookieKey(): string { return "auth_token"; }
 
   isLoggedIn(): boolean {
     const cookies = document.cookie.split(';');
-    const regex = new RegExp(`^${this.authCookingKey}=`)
+    const regex = new RegExp(`^${this.authCookieKey}=`)
     for (const cookie of cookies) {
       if (cookie.match(regex))
         return true;
