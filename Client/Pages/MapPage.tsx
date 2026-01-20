@@ -8,9 +8,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import LocationModel from '../Models/LocationModel';
 import { apiService } from '../ApiService';
 import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
+import { mapFilterPreferencesModel } from '../Models/MapFilterPreferencesModel';
 import MapButtons from '../Components/MapButtons';
 import MapFilterDialog from '../Components/MapFilterDialog';
-import * as FilterDialog from '../Components/MapFilterDialog';
 
 interface Props {
   navigate: NavigateFunction;
@@ -31,8 +31,7 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
   }
 
   componentDidMount(): void {
-    let filterPreferences = FilterDialog.retrievePreferences();
-    this.fetchLocations(filterPreferences);
+    this.onPreferencesUpdated();
   }
 
   render(): React.ReactNode {
@@ -50,7 +49,7 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
               <MapButtons onFilterButton={() => this.onFilterButton()}/>
             </MapContainer>
           </div>
-          <MapFilterDialog open={this.state.isShowingFilterDialog} onSubmit={data => this.onFilterSubmit(data)} />
+          <MapFilterDialog open={this.state.isShowingFilterDialog} onSubmit={() => this.onFilterSubmit()} />
         </React.Fragment>
       );
     } else if (this.state.error) {
@@ -70,8 +69,10 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
     }
   }
 
-  private fetchLocations(filterPreferences: FilterDialog.FormData) {
-    apiService.fetchLocations(Array.from(filterPreferences.smokingStatuses))
+  private onPreferencesUpdated() {
+    const preferences = mapFilterPreferencesModel.retrievePreferences();
+
+    apiService.fetchLocations(Array.from(preferences.smokingStatuses))
       .then(locations => { this.setState({ locations, error: false }) })
       .catch(() => { this.setState({ locations: null, error: true })});
   }
@@ -80,8 +81,8 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
     this.setState({ isShowingFilterDialog: true });
   }
 
-  private onFilterSubmit(formData: FilterDialog.FormData) {
-    console.debug(formData);
+  private onFilterSubmit() {
+    this.onPreferencesUpdated();
     this.setState({ isShowingFilterDialog: false });
   }
 

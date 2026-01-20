@@ -1,51 +1,21 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup } from '@mui/material';
 import * as React from 'react';
 import { SmokingStatus } from '../Models/SmokingStatus';
-
-const PreferencesCookieName: string = 'map_filter_preferences';
-
-export interface FormData {
-  smokingStatuses: Set<SmokingStatus>
-}
-
-export function retrievePreferences(): FormData {
-  let cookieValue = document.cookie.split('; ').find(cookie => cookie.startsWith(`${PreferencesCookieName}=`))
-    ?.split('=')[1];
-  if (!cookieValue) {
-    return getDefaultPreferences();
-  }
-
-  let deserializedFormData = JSON.parse(atob(cookieValue));
-  return {
-    smokingStatuses: new Set<SmokingStatus>(deserializedFormData.smokingStatuses)
-  };
-}
-
-function getDefaultPreferences(): FormData {
-  return { smokingStatuses: new Set<SmokingStatus>(['no', 'outside', 'isolated', 'separated']) };
-}
-
-function storePreferences(preferences: FormData) {
-  const serializableFormData = {
-    smokingStatuses: Array.from(preferences.smokingStatuses)
-  };
-  const serialized = btoa(JSON.stringify(serializableFormData));
-  document.cookie = `${PreferencesCookieName}=${serialized}`;
-}
+import { MapFilterPreferencesData, mapFilterPreferencesModel } from '../Models/MapFilterPreferencesModel';
 
 interface Props {
   open: boolean;
-  onSubmit: (formData: FormData) => void;
+  onSubmit: () => void;
 }
 
 interface State {
-  formData: FormData;
+  preferencesData: MapFilterPreferencesData;
 }
 
 export default class MapFilterDialog extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { formData: retrievePreferences() }
+    this.state = { preferencesData: mapFilterPreferencesModel.retrievePreferences() }
   }
 
   render(): React.ReactNode {
@@ -60,21 +30,21 @@ export default class MapFilterDialog extends React.Component<Props, State> {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={this.state.formData.smokingStatuses.has('outside')}
+                  checked={this.state.preferencesData.smokingStatuses.has('outside')}
                   onChange={(evt) => this.toggleSmokingStatus('outside', evt.target.checked)} />
               }
               label="Outside" />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={this.state.formData.smokingStatuses.has('isolated')}
+                  checked={this.state.preferencesData.smokingStatuses.has('isolated')}
                   onChange={(evt) => this.toggleSmokingStatus('isolated', evt.target.checked)} />
               }
               label="Isolated" />
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={this.state.formData.smokingStatuses.has('separated')}
+                  checked={this.state.preferencesData.smokingStatuses.has('separated')}
                   onChange={(evt) => this.toggleSmokingStatus('separated', evt.target.checked)} />
               }
               label="Separated" />
@@ -88,17 +58,17 @@ export default class MapFilterDialog extends React.Component<Props, State> {
   }
 
   private toggleSmokingStatus(smokingStatus: SmokingStatus, enabled: boolean) {
-    let formData = this.state.formData;
+    let formData = this.state.preferencesData;
     if (enabled)
       formData.smokingStatuses.add(smokingStatus);
     else
       formData.smokingStatuses.delete(smokingStatus);
 
-    this.setState({ formData });
+    this.setState({ preferencesData: formData });
   }
 
   private onApply() {
-    storePreferences(this.state.formData);
-    this.props.onSubmit(this.state.formData);
+    mapFilterPreferencesModel.storePreferences(this.state.preferencesData);
+    this.props.onSubmit();
   }
 }
