@@ -1,3 +1,10 @@
+## 0.4.x
+
+* Dialog to filter map by smoking status.
+* Text fields submit as forms.
+* Retry attempts if loading locations from Overpass fails.
+* Anti-forgery optimisation.
+
 ## 0.3.x
 
 * Zoom button on map.
