@@ -63,7 +63,7 @@ public class OverpassApiService : IDisposable
                 await Task.Delay(RetryDelayMiliseconds);
                 return await FetchPointsOfInterest(keySearch, attempts - 1);
             }
-            return [];
+            throw new Exception("Exhausted all attempts to load points of interest.");
         }
 
 
