@@ -10,7 +10,7 @@ export class AboutPage extends React.Component {
         <Typography>
             <Trans i18nKey="pages.about.app_version" values={{ version }} /><br /><br />
 
-            &copy; 2025 <a href="http://braden-walters.info" target="_blank">Braden Walters</a> <br /><br />
+            &copy; 2025 - 2026 <a href="http://braden-walters.info" target="_blank">Braden Walters</a> <br /><br />
 
             <Trans i18nKey="pages.about.info"
               components = {{
