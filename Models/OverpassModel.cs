@@ -1,3 +1,4 @@
+using NoSmokingMap.Models.Caching;
 using NoSmokingMap.Models.Overpass;
 using NoSmokingMap.Services;
 using NoSmokingMap.Utilities;
@@ -9,16 +10,16 @@ public class OverpassModel
     private const int FetchPoiAttempts = 3;
 
     private readonly OverpassApiService overpassApiService;
+    private readonly AmenityCacheService amenityCacheService;
     private readonly OverpassApiService.PoiKeySearch poiKeySearch;
 
     private OverpassElement[] allAmenities;
     private Dictionary<OverpassSmoking, OverpassElement[]> amenitiesBySmoking;
-    private DateTime? lastQueryTime = null;
 
-    public OverpassModel(OverpassApiService overpassApiService)
+    public OverpassModel(OverpassApiService overpassApiService, AmenityCacheService amenityCacheService)
     {
         this.overpassApiService = overpassApiService;
-
+        this.amenityCacheService = amenityCacheService;
         poiKeySearch = new OverpassApiService.PoiKeySearch
         {
             UnionSearch =
@@ -44,12 +45,26 @@ public class OverpassModel
 
     public async Task Update()
     {
-        if (lastQueryTime == null || DateTime.UtcNow > lastQueryTime.Value.AddDays(1))
+        bool initialized = false;
+        amenityCacheService.DetermineExpiration();
+
+        if (DateTime.UtcNow < amenityCacheService.ExpiresAt)
+        {
+            var amenityCache = await amenityCacheService.TryReadCache();
+            if (amenityCache != null)
+            {
+                allAmenities = amenityCache.AllAmenities;
+                initialized = true;
+            }
+        }
+        
+        if (!initialized)
         {
             allAmenities = await overpassApiService.FetchPointsOfInterest(poiKeySearch, FetchPoiAttempts);
-            GroupAllAmenitiesBySmoking();
-            lastQueryTime = DateTime.UtcNow;
+            await amenityCacheService.TryWriteCache(new AmenityCacheDto(allAmenities));
         }
+
+        GroupAllAmenitiesBySmoking();
     }
 
     public IEnumerable<OverpassElement> GetAmenitiesBySmoking(OverpassSmoking smokingType)
