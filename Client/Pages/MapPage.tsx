@@ -135,7 +135,7 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
 
   private getMarkerIcon(location: LocationModel): L.Icon | undefined {
     var iconUrl: string = ['no', 'outside', 'isolated', 'separated'].indexOf(location.smoking) != -1
-      ? `/pin-smoking-${location.smoking}.svg`
+      ? `/pin-smoking-${location.smoking}.png`
       : undefined;
 
     if (!iconUrl)
