@@ -7,55 +7,55 @@ namespace NoSmokingMap.Models.Overpass;
 public class OverpassElement
 {
     [JsonRequired]
-    [Key("id")]
+    [Key(0)]
     public required long Id { get; set; }
 
     [JsonRequired]
-    [Key("type")]
+    [Key(1)]
     public required OverpassElementType Type { get; set; }
 
     [MessagePackObject]
     public class OverpassTags
     {
-        [Key("name")]
+        [Key(0)]
         public string? Name { get; set; }
 
-        [Key("smoking")]
+        [Key(1)]
         public OverpassSmoking? Smoking { get; set; }
 
         [JsonPropertyName("addr:street")]
-        [Key("addr:street")]
+        [Key(2)]
         public string Street { get; set; } = string.Empty;
 
         [JsonPropertyName("addr:housenumber")]
-        [Key("addr:housenumber")]
+        [Key(3)]
         public string Housenumber { get; set; } = string.Empty;
     }
 
     [JsonRequired]
-    [Key("tags")]
+    [Key(2)]
     public required OverpassTags Tags { get; set; }
 
-    [Key("lat")]
+    [Key(3)]
     public float? Lat { get; set; }
 
-    [Key("lon")]
+    [Key(4)]
     public float? Lon { get; set; }
 
     [MessagePackObject]
     public class OverpassBounds
     {
-        [Key("minlat")]
+        [Key(0)]
         public float Minlat { get; set; }
-        [Key("minlon")]
+        [Key(1)]
         public float Minlon { get; set; }
-        [Key("maxlat")]
+        [Key(2)]
         public float Maxlat { get; set; }
-        [Key("maxlon")]
+        [Key(3)]
         public float Maxlon { get; set; }
     }
 
-    [Key("bounds")]
+    [Key(5)]
     public OverpassBounds? Bounds { get; set; }
 
     public Geocoordinates? GetLocation()

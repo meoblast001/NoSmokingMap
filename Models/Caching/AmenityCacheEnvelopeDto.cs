@@ -6,10 +6,10 @@ namespace NoSmokingMap.Models.Caching;
 [MessagePackObject]
 public class AmenityCacheEnvelopeDto
 {
-    public const int CurrentVersion = 1;
+    public const string CurrentVersion = "1";
 
     [Key(0)]
-    public required int Version { get; set; } = default!;
+    public required string Version { get; set; } = default!;
 
     [Key(1)]
     public required byte[] Data { get; set; } = default!;
