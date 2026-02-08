@@ -11,6 +11,7 @@ import { smokingStatusTranslationKey } from '../Models/SmokingStatus';
 import { mapFilterPreferencesModel } from '../Models/MapFilterPreferencesModel';
 import MapButtons from '../Components/MapButtons';
 import MapFilterDialog from '../Components/MapFilterDialog';
+import * as L from 'leaflet';
 
 interface Props {
   navigate: NavigateFunction;
@@ -109,8 +110,10 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
         margin: '0px 5px'
       };
 
+      let markerIcon = this.getMarkerIcon(location);
+
       return (
-        <Marker key={location.id} position={[location.lat, location.lon]}>
+        <Marker key={location.id} position={[location.lat, location.lon]} {...(markerIcon && { icon: markerIcon })}>
           <Popup>
             <Typography>
               <b>{location.name}</b>
@@ -127,6 +130,20 @@ class MapPageInternal extends React.Component<Props & WithTranslation, State> {
           </Popup>
         </Marker>
       )
+    });
+  }
+
+  private getMarkerIcon(location: LocationModel): L.Icon | undefined {
+    var iconUrl: string = ['no', 'outside', 'isolated', 'separated'].indexOf(location.smoking) != -1
+      ? `/pin-smoking-${location.smoking}.svg`
+      : undefined;
+
+    if (!iconUrl)
+      return undefined;
+
+    return L.icon({
+      iconUrl,
+      iconSize: [31, 31],
     });
   }
 

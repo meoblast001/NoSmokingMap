@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="55"
+   height="55"
+   viewBox="0 0 14.552083 14.552084"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   sodipodi:docname="pin-smoking-outside.svg"
+   xml:space="preserve"
+   inkscape:export-filename="wwwroot/pin-smoking-outside.png"
+   inkscape:export-xdpi="58.200184"
+   inkscape:export-ydpi="58.200184"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="6.0079124"
+     inkscape:cx="49.101914"
+     inkscape:cy="27.380559"
+     inkscape:window-width="1920"
+     inkscape:window-height="1052"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" /><defs
+     id="defs1" /><g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"><circle
+       style="fill:#08a600;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-opacity:1;stroke-dasharray:none"
+       id="path1"
+       cx="7.2760415"
+       cy="7.2760415"
+       r="6.614583" /><circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-dasharray:none;stroke-opacity:1"
+       id="path1-3"
+       cx="7.2760415"
+       cy="7.276042"
+       r="5.3050451" /><g
+       style="fill:#1f1f1f"
+       id="g1"
+       transform="matrix(0.00661458,0,0,0.00661458,4.1010431,10.45104)"><path
+         d="M 440,-80 V -600 H 80 l 400,-280 400,280 H 520 v 520 z m 40,-600 H 626 334 Z M 120,-80 v -210 l -32,-176 78,-14 30,160 h 164 v 240 h -80 v -160 h -80 v 160 z m 480,0 v -240 h 164 l 30,-160 78,14 -32,176 V -80 H 760 V -240 H 680 V -80 Z M 334,-680 H 626 L 480,-782 Z"
+         id="path1-0" /></g></g></svg>
