@@ -1,3 +1,8 @@
+## 0.5.x
+
+* Show different marker icons depending on smoking status of each location.
+* Filesystem cache of locations.
+
 ## 0.4.x
 
 * Dialog to filter map by smoking status.
