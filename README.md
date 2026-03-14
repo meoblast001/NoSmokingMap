@@ -4,16 +4,9 @@ No Smoking Map
 A web application for finding non-smoking bars in your city and making it easy to update information about whether bars
 allow smoking. Data is based on OpenStreetMap (querying with Overpass).
 
-### Getting started
+### Development - Getting started
 
-Open a command line to this directory and first build the client (NPM, Webpack) after installing NPM:
-
-```shell
-npm install
-npm run build-dev
-```
-
-Then set up your configuration by first copying the template:
+Set up your configuration by first copying the template:
 
 ```shell
 cp appsettings.Development.template.json appsettings.Development.json
@@ -21,20 +14,22 @@ cp appsettings.Development.template.json appsettings.Development.json
 
 Then open `appsettings.Development.json` and replace `OAuthSettings.ClientId` and `OAuthSettings.ClientSecret` with your
 development OAuth credentials. Do so by logging into the
-[OSM dev environment](https://master.apis.dev.openstreetmap.org/) and going to "My Account > OAuth 2 Applications". Set
-`OAuthSettings.RedirectUri` to the URL your server will use, such as `https://localhost:5219/osm_auth/post_auth`.
+[OSM dev environment](https://master.apis.dev.openstreetmap.org/) and going to "My Account > OAuth 2 Applications".
 
-Set up your connection string in `appsettings.Development.json` to a PostgreSQL database.
-
-Then, build, run migrations, and run the server as follows:
+You will then need to create and install a fake SSL certificate. Navigate to the subdirectory `certs/` and execute:
 
 ```shell
-dotnet build
-dotnet ef database update
-dotnet run --urls "https://localhost:5219"
+mkcert -install
+mkcert localhost
 ```
 
-Navigate in the browser to [https://localhost:5219](https://localhost:5219).
+Return to the project root, build the docker images, and finally start the containers in watch mode.
 
-Make sure to rerun `npm run build-dev` any time you make client changes and `dotnet build` any time you make server
-changes.
+```shell
+docker compose build
+docker compose watch
+```
+
+Wait a moment for the services to come online and then navigate in the browser to
+[https://localhost:5219](https://localhost:5219) to see the application. For subsequent starts, you only need to run the
+final watch command. You will need to recreate your SSL certificate when it expires.
