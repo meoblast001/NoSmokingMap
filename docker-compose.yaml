@@ -1,0 +1,53 @@
+name: nosmokingapp-dev
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+      target: dev-client
+    volumes:
+      - ./wwwroot/dist:/src/wwwroot/dist
+    develop:
+      watch:
+        - path: ./package.json
+          target: /src/package.json
+          action: sync
+        - path: ./package-lock.json
+          target: /src/package-lock.json
+          action: sync
+        - path: ./Client
+          target: /src/Client
+          action: sync
+
+  server:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+      target: dev-server
+    ports:
+      - "5218:5218"
+    volumes:
+      - ./wwwroot/dist:/src/wwwroot/dist
+      - persistent-data:/app/persistent_data
+    develop:
+      watch:
+        - path: ./NoSmokingMap.csproj
+          target: /src/NoSmokingMap.csproj
+          action: rebuild
+        - path: ./
+          target: /src
+          action: sync
+
+  https_proxy:
+    image: caddy:latest
+    ports:
+      - "5219:5219"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certs:/certs
+    depends_on:
+      - server
+
+volumes:
+  persistent-data:

@@ -1,0 +1,10 @@
+:5219 {
+    header / {
+        Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
+        Pragma "no-cache"
+        Expires "0"
+    }
+
+    tls /certs/localhost.pem /certs/localhost-key.pem
+    reverse_proxy server:5218
+}

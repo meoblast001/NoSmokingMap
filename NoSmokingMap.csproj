@@ -42,18 +42,26 @@
     <PackageReference Include="OsmSharp" Version="6.2.0" />
   </ItemGroup>
 
-  <Target Name="ExportVersion" BeforeTargets="PrepareForBuild" Outputs="version.txt">
+  <Target Name="ExportVersion" BeforeTargets="PrepareForBuild" Outputs="version.txt" Condition="'$(SkipVersionGeneration)' != 'true'">
     <Exec Command="git describe --tags" ConsoleToMsBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="DescribedVersion" />
     </Exec>
     <WriteLinesToFile File="version.txt" Lines="$(DescribedVersion)" Overwrite="true" />
   </Target>
 
+  <Target Name="ExportVersion" BeforeTargets="PrepareForBuild" Outputs="version.txt" Condition="'$(SkipVersionGeneration)' == 'true'">
+    <WriteLinesToFile File="version.txt" Lines="0.0.0" Overwrite="true" />
+  </Target>
+
   <Target Name="ExportVersionClean" BeforeTargets="CoreClean">
     <Delete Files="version.txt" />
   </Target>
 
-  <Target Name="ClientBuild" BeforeTargets="Build" Inputs="@(UpToDateCheckInput)" Outputs="wwwroot/dist/main.build.js">
+  <Target Name="ClientBuild"
+          BeforeTargets="Build"
+          Inputs="@(UpToDateCheckInput)"
+          Outputs="wwwroot/dist/main.build.js"
+          Condition="'$(SkipClientBuild)' != 'true'">
     <Exec Condition="$(Configuration) == 'Debug'" Command="npm run build-dev" ContinueOnError="false" />
     <Exec Condition="$(Configuration) == 'Release'" Command="npm run build" ContinueOnError="false" />
   </Target>
