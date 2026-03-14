@@ -56,14 +56,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 app.MapControllers();
 app.MapControllerRoute(name: "spa-index", pattern: "", defaults: new { controller = "Spa", action = "Index" });
 app.MapControllerRoute(name: "application", "application/{action=Index}", defaults: new { controller = "Application" });
-app.MapControllerRoute(name: "spa-catch-all",
-    pattern: "{*path:regex(^(?!api/|application/).+$)}",
-    defaults: new { controller = "Spa", action = "Index" });
+app.MapFallbackToController("Index", "Spa");
 
 using (var scope = app.Services.CreateScope())
 {
