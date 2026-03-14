@@ -2,8 +2,6 @@
 # Client build container. Results passed to server by bind mount.
 #
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev-base
-
 FROM node:25 AS dev-client
 
 WORKDIR /src
