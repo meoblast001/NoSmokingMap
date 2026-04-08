@@ -6,38 +6,35 @@ services:
       context: .
       dockerfile: development.Dockerfile
       target: dev-client
+      args:
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     volumes:
-      - ./wwwroot/dist:/src/wwwroot/dist
-    develop:
-      watch:
-        - path: ./package.json
-          target: /src/package.json
-          action: sync
-        - path: ./package-lock.json
-          target: /src/package-lock.json
-          action: sync
-        - path: ./Client
-          target: /src/Client
-          action: sync
+      - ./:/src
 
   server:
     build:
       context: .
       dockerfile: development.Dockerfile
       target: dev-server
+      args:
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
+    user: "${hOST_UID:-1000}:${HOST_GID:-1000}"
     ports:
       - "5218:5218"
     volumes:
-      - ./wwwroot/dist:/src/wwwroot/dist
+      - ./:/src
       - persistent-data:/app/persistent_data
     develop:
       watch:
         - path: ./NoSmokingMap.csproj
           target: /src/NoSmokingMap.csproj
           action: rebuild
-        - path: ./
-          target: /src
-          action: sync
+    post_start:
+      - command: chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app/persistent_data
+        user: root
 
   https_proxy:
     image: caddy:latest

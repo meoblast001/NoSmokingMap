@@ -26,8 +26,8 @@ mkcert localhost
 Return to the project root, build the docker images, and finally start the containers in watch mode.
 
 ```shell
-docker compose build
-docker compose watch
+./docker-compose.sh build
+./docker-compose.sh watch
 ```
 
 Wait a moment for the services to come online and then navigate in the browser to
